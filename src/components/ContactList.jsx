@@ -1,6 +1,34 @@
 import { useEffect, useState } from 'react';
 import { getContacts, updateContactStatus } from '../services/contactService';
-import { jwtDecode } from 'jwt-decode'; // Importamos para leer el rol del token
+import { jwtDecode } from 'jwt-decode';
+
+// --- COMPONENTE SKELETON (Efecto de carga) ---
+const ContactSkeleton = ({ isAdmin }) => {
+    const skeletonRowStyle = {
+        height: '20px',
+        backgroundColor: '#e0e0e0',
+        borderRadius: '4px',
+        margin: '10px 0',
+        animation: 'pulse 1.5s infinite ease-in-out'
+    };
+
+    return (
+        <>
+            <style>
+                {`@keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }`}
+            </style>
+            {[1, 2, 3, 4, 5].map((n) => (
+                <tr key={n}>
+                    <td style={{ padding: '10px' }}><div style={skeletonRowStyle}></div></td>
+                    <td style={{ padding: '10px' }}><div style={skeletonRowStyle}></div></td>
+                    <td style={{ padding: '10px' }}><div style={skeletonRowStyle}></div></td>
+                    <td style={{ padding: '10px' }}><div style={skeletonRowStyle}></div></td>
+                    {isAdmin && <td style={{ padding: '10px' }}><div style={skeletonRowStyle}></div></td>}
+                </tr>
+            ))}
+        </>
+    );
+};
 
 const ContactList = () => {
     const [contacts, setContacts] = useState([]);
@@ -15,7 +43,6 @@ const ContactList = () => {
     if (token) {
         try {
             const decoded = jwtDecode(token);
-            // Verificamos que el rol coincida exactamente con el del backend
             isAdmin = decoded.role === 'ROLE_ADMIN';
         } catch (err) {
             console.error("Error al decodificar el token:", err);
@@ -23,7 +50,7 @@ const ContactList = () => {
     }
 
     const handleEditClick = (contact) => {
-        if (!isAdmin) return; // Doble validación de seguridad
+        if (!isAdmin) return;
         setSelectedContact(contact);
         setIsModalOpen(true);
     };    
@@ -31,6 +58,7 @@ const ContactList = () => {
     useEffect(() => {
         const fetchContacts = async () => {
             try {
+                // Aquí es donde se nota la demora de Render
                 const data = await getContacts();
                 setContacts(data);
             } catch (err) {
@@ -44,15 +72,11 @@ const ContactList = () => {
 
     const handleStatusChange = async (e) => {
         const nuevoEstado = e.target.checked ? 'Contactado' : 'Pendiente';
-        
         try {
-            // Llamada al backend (el backend rechazará esto si el token no es ROLE_ADMIN)
             await updateContactStatus(selectedContact.id, nuevoEstado);
-            
             setContacts(contacts.map(c => 
                 c.id === selectedContact.id ? { ...c, estado: nuevoEstado } : c
             ));
-            
             setSelectedContact({ ...selectedContact, estado: nuevoEstado });
             alert("Estado actualizado con éxito");
         } catch (err) {
@@ -76,13 +100,13 @@ const ContactList = () => {
         padding: '8px 16px', backgroundColor: '#6c757d', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer'
     };
 
-    if (loading) return <p>Cargando contactos...</p>;
-
     return (
         <div style={{ marginTop: '20px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <h3>Lista de Contactos (Desde MongoDB)</h3>
-                {!isAdmin && <span style={{ color: '#666', fontSize: '0.9rem' }}>ℹ️ Modo Lectura</span>}
+                {!isAdmin && !loading && (
+                    <span style={{ color: '#666', fontSize: '0.9rem' }}>ℹ️ Modo Lectura</span>
+                )}
             </div>
 
             <table border="1" style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
@@ -92,54 +116,56 @@ const ContactList = () => {
                         <th style={{ padding: '10px' }}>Email</th>
                         <th style={{ padding: '10px' }}>Teléfono</th>
                         <th style={{ padding: '10px' }}>Estado</th>
-                        {/* 1. Encabezado condicional */}
                         {isAdmin && <th style={{ padding: '10px' }}>Acciones</th>}
                     </tr>
                 </thead>
                 <tbody>
-                    {contacts.map(contact => (
-                        <tr key={contact.id}>
-                            <td style={{ padding: '10px' }}>{contact.nombre}</td>
-                            <td style={{ padding: '10px' }}>{contact.email}</td>
-                            <td style={{ padding: '10px' }}>
-                                {contact.telefono ? (
-                                    <span>{contact.telefono.formateado || ''} </span>
-                                ) : 'Sin teléfono'}
-                            </td>
-                            <td style={{ padding: '10px' }}>
-                                <span style={{
-                                    padding: '4px 8px',
-                                    borderRadius: '4px',
-                                    backgroundColor: contact.estado === 'Contactado' ? '#d4edda' : '#fff3cd',
-                                    color: contact.estado === 'Contactado' ? '#155724' : '#856404'
-                                }}>
-                                    {contact.estado || 'Pendiente'}
-                                </span>
-                            </td>
-                            {/* 2. Botón condicional */}
-                            {isAdmin && (
+                    {loading ? (
+                        /* Mostramos esqueletos con animación mientras loading sea true */
+                        <ContactSkeleton isAdmin={isAdmin} />
+                    ) : (
+                        contacts.map(contact => (
+                            <tr key={contact.id}>
+                                <td style={{ padding: '10px' }}>{contact.nombre}</td>
+                                <td style={{ padding: '10px' }}>{contact.email}</td>
                                 <td style={{ padding: '10px' }}>
-                                    <button 
-                                        onClick={() => handleEditClick(contact)}
-                                        style={{
-                                            padding: '5px 10px',
-                                            backgroundColor: '#007bff',
-                                            color: 'white',
-                                            border: 'none',
-                                            borderRadius: '4px',
-                                            cursor: 'pointer'
-                                        }}
-                                    >
-                                        Editar
-                                    </button>
+                                    {contact.telefono ? (
+                                        <span>{contact.telefono.formateado || ''} </span>
+                                    ) : 'Sin teléfono'}
                                 </td>
-                            )}
-                        </tr>
-                    ))}
+                                <td style={{ padding: '10px' }}>
+                                    <span style={{
+                                        padding: '4px 8px',
+                                        borderRadius: '4px',
+                                        backgroundColor: contact.estado === 'Contactado' ? '#d4edda' : '#fff3cd',
+                                        color: contact.estado === 'Contactado' ? '#155724' : '#856404'
+                                    }}>
+                                        {contact.estado || 'Pendiente'}
+                                    </span>
+                                </td>
+                                {isAdmin && (
+                                    <td style={{ padding: '10px' }}>
+                                        <button 
+                                            onClick={() => handleEditClick(contact)}
+                                            style={{
+                                                padding: '5px 10px',
+                                                backgroundColor: '#007bff',
+                                                color: 'white',
+                                                border: 'none',
+                                                borderRadius: '4px',
+                                                cursor: 'pointer'
+                                            }}
+                                        >
+                                            Editar
+                                        </button>
+                                    </td>
+                                )}
+                            </tr>
+                        ))
+                    )}
                 </tbody>
             </table>
 
-            {/* 3. Modal condicional (solo accesible si es Admin) */}
             {isModalOpen && selectedContact && isAdmin && (
                 <div style={modalOverlayStyle}>
                     <div style={modalContentStyle}>
