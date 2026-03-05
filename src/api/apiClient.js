@@ -1,13 +1,11 @@
 import axios from 'axios';
 
-// Cliente para el Auth-Service (Puerto 8081)
 export const authApi = axios.create({
-    baseURL: import.meta.env.VITE_AUTH_API_URL
+    baseURL: 'http://localhost:8080/api/contacts/'
 });
 
-// Cliente para el App-Manager (Puerto 8080)
 export const managerApi = axios.create({
-    baseURL: import.meta.env.VITE_MANAGER_API_URL
+    baseURL: 'http://localhost:8080/api/contacts'
 });
 
 // Interceptor para añadir el token automáticamente al Manager
