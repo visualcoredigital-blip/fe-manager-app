@@ -1,12 +1,14 @@
 import axios from 'axios';
 
-// Usamos import.meta.env para leer del .env en local y de Vercel en la nube
+// Usamos una sola variable base para todo el Backend Manager
+const BASE_URL = import.meta.env.VITE_MANAGER_API_URL;
+
 export const authApi = axios.create({
-    baseURL: import.meta.env.VITE_AUTH_API_URL 
+    baseURL: BASE_URL
 });
 
 export const managerApi = axios.create({
-    baseURL: import.meta.env.VITE_MANAGER_API_URL
+    baseURL: BASE_URL
 });
 
 // Interceptor para añadir el token automáticamente al Manager
