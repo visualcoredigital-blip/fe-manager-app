@@ -1,8 +1,8 @@
-import { authApi } from '../api/apiClient';
+import { managerApi } from '../api/apiClient';
 
 export const login = async (username, password) => {
     try {
-        const response = await authApi.post('/auth/login-proxy', { username, password });
+        const response = await managerApi.post('/api/contacts/auth/login-proxy', { username, password });
         if (response.data.token) {
             localStorage.setItem('token', response.data.token);
         }

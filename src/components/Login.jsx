@@ -13,8 +13,10 @@ const Login = ({ onLoginSuccess }) => {
         e.preventDefault();
         setError('');
         try {
-            await login(credentials.username, credentials.password);
-            onLoginSuccess(); // Avisamos al padre que ya tenemos token
+            const data = await login(credentials.username, credentials.password);
+            localStorage.setItem('username', credentials.username);    
+            const token = data?.token || localStorage.getItem('token');
+            onLoginSuccess(token);
         } catch (err) {
             setError('Credenciales inválidas. Inténtalo de nuevo.');
         }
