@@ -3,10 +3,6 @@ import axios from 'axios';
 // Usamos una sola variable base para todo el Backend Manager
 const BASE_URL = import.meta.env.VITE_MANAGER_API_URL;
 
-export const authApi = axios.create({
-    baseURL: BASE_URL
-});
-
 export const managerApi = axios.create({
     baseURL: BASE_URL
 });
@@ -19,3 +15,5 @@ managerApi.interceptors.request.use((config) => {
     }
     return config;
 });
+
+export default managerApi;
