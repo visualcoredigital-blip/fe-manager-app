@@ -38,7 +38,7 @@ function App() {
             display: "flex",
             flexDirection: "column"
           }}>
-            <h3 style={{ borderBottom: "1px solid #555", paddingBottom: "10px" }}>Manager</h3>
+            <h3 style={{ borderBottom: "1px solid #555", paddingBottom: "10px" }}>Manager App</h3>
             <div style={{ marginBottom: "20px", padding: "10px", backgroundColor: "#34495e", borderRadius: "5px" }}>
                <small style={{ display: "block", color: "#bdc3c7" }}>Sesión iniciada:</small>
                <strong style={{ fontSize: "1.1em" }}>👤 {username}</strong>
@@ -73,8 +73,6 @@ function App() {
 
           {/* CONTENIDO */}
           <div style={{ flex: 1, padding: "20px", overflowY: "auto" }}>
-            <h1>Bienvenido a Manager App</h1>
-            <hr />
             {view === "contacts" && <ContactList />}
             {view === "users" && <UsersList />}
           </div>

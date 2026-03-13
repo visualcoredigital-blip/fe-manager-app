@@ -103,7 +103,7 @@ const ContactList = () => {
     return (
         <div style={{ marginTop: '20px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h3>Lista de Contactos (Desde MongoDB)</h3>
+                <h3>Listado de Contactos</h3>
                 {!isAdmin && !loading && (
                     <span style={{ color: '#666', fontSize: '0.9rem' }}>ℹ️ Modo Lectura</span>
                 )}
