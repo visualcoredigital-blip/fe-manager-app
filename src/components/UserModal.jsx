@@ -8,23 +8,30 @@ const UserModal = ({ isOpen, onClose, onSuccess, user }) => {
         username: '',
         password: '',
         email: '',
-        roles: ['ROLE_USER'],
+        roles: [],
         enabled: true
     });
     const [loading, setLoading] = useState(false);
 
     // Efecto para cargar datos del usuario si estamos en modo edición
     useEffect(() => {
-        if (user) {
+        if (user && isOpen) {
             setFormData({
                 username: user.username || '',
-                password: '', // Password vacío por seguridad en edición
+                password: '', 
                 email: user.email || '',
-                roles: user.roles || ['ROLE_USER'],
+                roles: user.roles || [],
                 enabled: user.enabled ?? true
             });
-        } else {
-            setFormData({ username: '', password: '', email: '', roles: ['ROLE_USER'], enabled: true });
+        } else if (!isOpen) {
+            // Reset al cerrar: Por defecto ID 2 (Usuario)
+            setFormData({ 
+                username: '', 
+                password: '', 
+                email: '', 
+                roles: [{id: 2, name: 'Usuario'}], 
+                enabled: true 
+            });
         }
     }, [user, isOpen]);
 
@@ -33,21 +40,45 @@ const UserModal = ({ isOpen, onClose, onSuccess, user }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
+
+        // --- SOLUCIÓN AL ERROR 403 / DESERIALIZACIÓN ---
+        // Mapeamos los objetos de rol a los Strings técnicos que espera el Auth-Service
+        const rolesForBackend = formData.roles.map(r => {
+            if (typeof r === 'string') return r;
+            // Si el ID es 1 es ADMIN, si es 2 es USER. 
+            // Esto asegura que mandes el código duro y no la traducción.
+            return r.id === 1 ? 'ROLE_ADMIN' : 'ROLE_USER';
+        });
+
+        const dataToSend = {
+            username: formData.username,
+            email: formData.email,
+            roles: rolesForBackend, // Enviamos ["ROLE_ADMIN"], no objetos
+            enabled: formData.enabled
+        };
+    
+        if (!user) {
+            dataToSend.password = formData.password;
+        }
+    
         try {
             if (user) {
-                // MODO EDICIÓN: Usamos el PUT que probamos al puerto 8000
-                const response = await managerApi.put(`/api/users/${user.id || user._id}`, formData);
+                // MODO EDICIÓN
+                const response = await managerApi.put(`/api/users/${user.id || user._id}`, dataToSend);
                 Swal.fire('¡Actualizado!', 'Usuario modificado con éxito', 'success');
                 onSuccess(response.data);
             } else {
-                // MODO CREACIÓN: Tu lógica original
-                const response = await managerApi.post('/api/users/create', formData);
+                // MODO CREACIÓN
+                const response = await managerApi.post('/api/users/create', dataToSend);
                 Swal.fire('¡Creado!', 'Usuario registrado con éxito', 'success');
                 onSuccess(response.data);
             }
             onClose();
         } catch (error) {
-            Swal.fire('Error', error.response?.data?.message || "Error en la operación", 'error');
+            console.log("Detalle del error:", error.response?.data);
+            // Mostramos el mensaje específico del backend si existe
+            const errorMsg = error.response?.data?.message || "Error en la operación (Posible error de formato)";
+            Swal.fire('Error', errorMsg, 'error');
         } finally {
             setLoading(false);
         }
@@ -78,35 +109,41 @@ const UserModal = ({ isOpen, onClose, onSuccess, user }) => {
                         />
                     </div>
 
-                    {/* La contraseña solo es requerida si estamos CREANDO un usuario */}
-                    <div className="form-group">
-                        <label>Contraseña {user && "(Dejar en blanco para mantener)"}</label>
-                        <input 
-                            type="password" 
-                            required={!user} 
-                            placeholder="********"
-                            value={formData.password}
-                            onChange={(e) => setFormData({...formData, password: e.target.value})}
-                        />
-                    </div>
+                    {!user && (
+                        <div className="form-group">
+                            <label>Password</label>
+                            <input 
+                                type="password" 
+                                required 
+                                placeholder="********"
+                                value={formData.password}
+                                onChange={(e) => setFormData({...formData, password: e.target.value})}
+                            />
+                        </div>
+                    )}
 
                     <div className="form-group">
                         <label>Rol asignado</label>
                         <select 
-                            value={formData.roles[0]}
-                            onChange={(e) => setFormData({...formData, roles: [e.target.value]})}
+                            // Sincronización por ID: evita fallos por traducciones
+                            value={formData.roles[0]?.id || ''}
+                            onChange={(e) => {
+                                const selectedId = parseInt(e.target.value);
+                                const selectedName = e.target.options[e.target.selectedIndex].text;
+                                // Guardamos el objeto para la UI
+                                setFormData({...formData, roles: [{ id: selectedId, name: selectedName }]});
+                            }}
                         >
-                            <option value="ROLE_USER">Usuario Estándar</option>
-                            <option value="ROLE_ADMIN">Administrador</option>
+                            <option value="2">Usuario</option>
+                            <option value="1">Administrador</option>
                         </select>
                     </div>
 
-                    {/* Campo de Estado (solo visible en edición para activar/desactivar) */}
                     {user && (
                         <div className="form-group">
                             <label>Estado</label>
                             <select 
-                                value={formData.enabled}
+                                value={String(formData.enabled)}
                                 onChange={(e) => setFormData({...formData, enabled: e.target.value === 'true'})}
                             >
                                 <option value="true">Activo</option>
