@@ -1,0 +1,77 @@
+/* Login.css - Versión de Centrado Absoluto */
+
+/* 1. Forzamos que el contenedor ocupe TODA la pantalla sin interferencias */
+.login-page {
+    position: fixed; /* O absolute, para asegurar que ignore otros contenedores */
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex !important; /* Usamos !important para sobreescribir otros estilos */
+    justify-content: center !important;
+    align-items: center !important;
+    background-color: #f4f7f9;
+    z-index: 999; /* Para que esté por encima de cualquier otro elemento */
+}
+
+/* 2. La tarjeta de Login con dimensiones más generosas */
+.login-card {
+    background: #ffffff;
+    width: 90%; /* Responsivo para móviles */
+    max-width: 450px; /* Tamaño ideal para escritorio */
+    padding: 50px;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    border: 1px solid #eaeaea;
+    text-align: center; /* Centra el texto interno */
+}
+
+/* 3. Estilos de los elementos internos */
+.login-card h2 {
+    margin-bottom: 35px;
+    font-size: 32px;
+    color: #222;
+    font-weight: 800;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    text-align: left; /* Los inputs mantienen el texto a la izquierda */
+}
+
+.form-group input {
+    width: 100%;
+    padding: 15px;
+    border: 1.5px solid #ddd;
+    border-radius: 10px;
+    font-size: 16px;
+    box-sizing: border-box; /* Crucial para que el padding no lo ensanche */
+}
+
+/* 4. El Botón "Entrar" */
+.login-button {
+    width: 100%;
+    padding: 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 15px;
+}
+
+/* 5. Link de recuperación */
+.forgot-password-container {
+    margin-top: 25px;
+}
+
+.forgot-password-link {
+    background: none;
+    border: none;
+    color: #007bff;
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: 500;
+}
