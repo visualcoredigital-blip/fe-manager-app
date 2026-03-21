@@ -2,77 +2,104 @@ import { useState, useEffect } from 'react';
 import Login from './components/Login';
 import ContactList from './components/ContactList';
 import UsersList from './components/UsersList';
+import ForgotPassword from './components/ForgotPassword';
+import ResetPassword from './components/ResetPassword';
+import './App.css'; // Importamos los nuevos estilos
 
 function App() {
-
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [view, setView] = useState("contacts");
+  
+  // Manejo de estados de autenticación: "login", "forgot", "reset"
+  const [authMode, setAuthMode] = useState("login");
 
   const username = localStorage.getItem('username');
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (token) setIsAuthenticated(true);
+    if (token) {
+      setIsAuthenticated(true);
+    }
+
+    // Detectar automáticamente si el usuario viene desde el link del correo
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('token')) {
+      setAuthMode("reset");
+    }
   }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('username');
     setIsAuthenticated(false);
+    setAuthMode("login");
+  };
+
+  // Función para renderizar el contenido de autenticación
+  const renderAuthContent = () => {
+    switch (authMode) {
+      case "forgot":
+        return <ForgotPassword onBack={() => setAuthMode("login")} />;
+      case "reset":
+        return (
+          <ResetPassword 
+            onFinish={() => {
+              setAuthMode("login");
+              // Limpiamos el token de la URL para que no reabra el formulario al recargar
+              window.history.replaceState({}, document.title, "/");
+            }} 
+          />
+        );
+      case "login":
+      default:
+        return (
+          <Login 
+            onLoginSuccess={() => setIsAuthenticated(true)} 
+            onForgotPassword={() => setAuthMode("forgot")} 
+          />
+        );
+    }
   };
 
   return (
     <div className="App">
       {!isAuthenticated ? (
-        <Login onLoginSuccess={() => setIsAuthenticated(true)} />
+        // Pantallas de Acceso (Login / Recuperación)
+        renderAuthContent()
       ) : (
-
+        // Panel de Administración (Post-Login)
         <div style={{ display: "flex", height: "100vh" }}>
-          {/* MENU LATERAL */}
-          <div style={{
-            width: "220px",
-            background: "#2c3e50",
-            color: "white",
-            padding: "20px",
-            borderRight: "1px solid #ccc",
-            display: "flex",
-            flexDirection: "column"
-          }}>
-            <h3 style={{ borderBottom: "1px solid #555", paddingBottom: "10px" }}>Manager App</h3>
-            <div style={{ marginBottom: "20px", padding: "10px", backgroundColor: "#34495e", borderRadius: "5px" }}>
-               <small style={{ display: "block", color: "#bdc3c7" }}>Sesión iniciada:</small>
-               <strong style={{ fontSize: "1.1em" }}>👤 {username}</strong>
+          
+          {/* MENU LATERAL con las nuevas clases de App.css */}
+          <div className="sidebar">
+            <h3>VisualCore</h3>
+            
+            <div className="user-info-card">
+               <small>Sesión iniciada:</small>
+               <strong>👤 {username}</strong>
             </div>
             
             <button
-              style={{ width: "100%", marginBottom: "10px", padding: "8px", cursor: "pointer" }}
+              className={`sidebar-btn ${view === "contacts" ? "active" : ""}`}
               onClick={() => setView("contacts")}
-            >Contactos</button>
+            >
+              Contactos
+            </button>
 
             <button
-              style={{ width: "100%", marginBottom: "10px", padding: "8px", cursor: "pointer" }}
+              className={`sidebar-btn ${view === "users" ? "active" : ""}`}
               onClick={() => setView("users")}
-            >Usuarios</button>
+            >
+              Usuarios
+            </button>
 
-            <div style={{ flexGrow: 1 }}></div>
-            <hr style={{ width: "100%", borderColor: "#555" }} />
-
-            <button
-              style={{ 
-                width: "100%", 
-                padding: "10px", 
-                backgroundColor: "#e74c3c", 
-                color: "white", 
-                border: "none", 
-                borderRadius: "4px",
-                cursor: "pointer" 
-              }}
-              onClick={handleLogout}
-            >Cerrar Sesión</button>
+            <button className="logout-btn" onClick={handleLogout}>
+              Cerrar Sesión
+            </button>
           </div>
 
-          {/* CONTENIDO */}
-          <div style={{ flex: 1, padding: "20px", overflowY: "auto" }}>
+          {/* ÁREA DE CONTENIDO */}
+          <div className="content-area">
             {view === "contacts" && <ContactList />}
             {view === "users" && <UsersList />}
           </div>

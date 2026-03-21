@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { login } from '../services/authService';
+import './Login.css'; 
 
-const Login = ({ onLoginSuccess }) => {
+const Login = ({ onLoginSuccess, onForgotPassword }) => {
     const [credentials, setCredentials] = useState({ username: '', password: '' });
     const [error, setError] = useState('');
 
@@ -22,37 +23,55 @@ const Login = ({ onLoginSuccess }) => {
         }
     };
 
+    const handleForgotPassword = () => {
+        // Ahora llamamos a la función que nos pasa App.jsx
+        // para cambiar el estado authMode a "forgot"
+        onForgotPassword();
+    };
+
     return (
-        <div style={{ maxWidth: '300px', margin: '100px auto', padding: '20px', border: '1px solid #ccc', borderRadius: '8px' }}>
-            <h2>Iniciar Sesión</h2>
-            <form onSubmit={handleSubmit}>
-                <div style={{ marginBottom: '10px' }}>
-                    <input
-                        type="text"
-                        name="username"
-                        placeholder="Usuario"
-                        value={credentials.username}
-                        onChange={handleChange}
-                        style={{ width: '100%', padding: '8px' }}
-                        required
-                    />
-                </div>
-                <div style={{ marginBottom: '10px' }}>
-                    <input
-                        type="password"
-                        name="password"
-                        placeholder="Contraseña"
-                        value={credentials.password}
-                        onChange={handleChange}
-                        style={{ width: '100%', padding: '8px' }}
-                        required
-                    />
-                </div>
-                {error && <p style={{ color: 'red', fontSize: '12px' }}>{error}</p>}
-                <button type="submit" style={{ width: '100%', padding: '10px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
-                    Entrar
-                </button>
-            </form>
+        <div className="login-page">
+            <div className="login-card">
+                <h2>VisualCoreDigital</h2>
+                <form onSubmit={handleSubmit}>
+                    <div className="form-group">
+                        <input
+                            type="text"
+                            name="username"
+                            placeholder="Usuario"
+                            value={credentials.username}
+                            onChange={handleChange}
+                            required
+                        />
+                    </div>
+                    <div className="form-group">
+                        <input
+                            type="password"
+                            name="password"
+                            placeholder="Contraseña"
+                            value={credentials.password}
+                            onChange={handleChange}
+                            required
+                        />
+                    </div>
+
+                    {error && <p className="error-message">{error}</p>}
+
+                    <button type="submit" className="login-button">
+                        Entrar
+                    </button>
+
+                    <div className="forgot-password-container">
+                        <button 
+                            type="button" 
+                            className="forgot-password-link"
+                            onClick={handleForgotPassword}
+                        >
+                            ¿Olvidó su contraseña?
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     );
 };
