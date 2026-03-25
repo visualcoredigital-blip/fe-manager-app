@@ -153,10 +153,14 @@ const UserModal = ({ isOpen, onClose, onSuccess, user }) => {
                     )}
 
                     <div className="modal-actions">
-                        <button type="button" className="btn-cancel" onClick={onClose}>
+                        <button type="button" className="btn-cancel" onClick={onClose} style={{
+                            backgroundColor: '#64748b', color: 'white', padding: '10px 20px', borderRadius: '6px', border: 'none'
+                        }}>
                             Cancelar
                         </button>
-                        <button type="submit" className="btn-save" disabled={loading}>
+                        <button type="submit" className="btn-save" disabled={loading} style={{
+                            backgroundColor: '#00A3E0', color: 'white', padding: '10px 20px', borderRadius: '6px', border: 'none', fontWeight: 'bold'
+                        }}>
                             {loading ? 'Guardando...' : (user ? 'Actualizar Cambios' : 'Crear Usuario')}
                         </button>
                     </div>

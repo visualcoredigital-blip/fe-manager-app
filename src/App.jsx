@@ -2,107 +2,68 @@ import { useState, useEffect } from 'react';
 import Login from './components/Login';
 import ContactList from './components/ContactList';
 import UsersList from './components/UsersList';
-import ForgotPassword from './components/ForgotPassword';
-import ResetPassword from './components/ResetPassword';
-import './App.css'; // Importamos los nuevos estilos
+import Header from './components/Header';
+import './App.css';
+import Footer from './components/Footer';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [view, setView] = useState("contacts");
-  
-  // Manejo de estados de autenticación: "login", "forgot", "reset"
-  const [authMode, setAuthMode] = useState("login");
-
   const username = localStorage.getItem('username');
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (token) {
-      setIsAuthenticated(true);
-    }
-
-    // Detectar automáticamente si el usuario viene desde el link del correo
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.has('token')) {
-      setAuthMode("reset");
-    }
+    if (token) setIsAuthenticated(true);
   }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('username');
     setIsAuthenticated(false);
-    setAuthMode("login");
-  };
-
-  // Función para renderizar el contenido de autenticación
-  const renderAuthContent = () => {
-    switch (authMode) {
-      case "forgot":
-        return <ForgotPassword onBack={() => setAuthMode("login")} />;
-      case "reset":
-        return (
-          <ResetPassword 
-            onFinish={() => {
-              setAuthMode("login");
-              // Limpiamos el token de la URL para que no reabra el formulario al recargar
-              window.history.replaceState({}, document.title, "/");
-            }} 
-          />
-        );
-      case "login":
-      default:
-        return (
-          <Login 
-            onLoginSuccess={() => setIsAuthenticated(true)} 
-            onForgotPassword={() => setAuthMode("forgot")} 
-          />
-        );
-    }
   };
 
   return (
     <div className="App">
       {!isAuthenticated ? (
-        // Pantallas de Acceso (Login / Recuperación)
-        renderAuthContent()
+        <Login onLoginSuccess={() => setIsAuthenticated(true)} />
       ) : (
-        // Panel de Administración (Post-Login)
-        <div style={{ display: "flex", height: "100vh" }}>
-          
-          {/* MENU LATERAL con las nuevas clases de App.css */}
-          <div className="sidebar">
-            <h3>VisualCore</h3>
-            
-            <div className="user-info-card">
-               <small>Sesión iniciada:</small>
-               <strong>👤 {username}</strong>
-            </div>
-            
-            <button
-              className={`sidebar-btn ${view === "contacts" ? "active" : ""}`}
-              onClick={() => setView("contacts")}
-            >
-              Contactos
-            </button>
+        <div className="dashboard-container">
+          <Header /> 
 
-            <button
-              className={`sidebar-btn ${view === "users" ? "active" : ""}`}
-              onClick={() => setView("users")}
-            >
-              Usuarios
-            </button>
+          <div className="dashboard-main">
+            <aside className="sidebar">
+              {/* Bloque de Usuario Corporativo */}
+            <div className="user-profile-card">
+              <small className="welcome-text">BIENVENIDO,</small>
+              <div className="user-name">👤 {username || 'Usuario'}</div>
+            </div>              
+              <nav className="sidebar-nav">
+                <button 
+                  className={`nav-btn ${view === "contacts" ? "active" : ""}`} 
+                  onClick={() => setView("contacts")}
+                >
+                  📇 Contactos
+                </button>
+                <button 
+                  className={`nav-btn ${view === "users" ? "active" : ""}`} 
+                  onClick={() => setView("users")}
+                >
+                  👥 Usuarios
+                </button>
+              </nav>
 
-            <button className="logout-btn" onClick={handleLogout}>
-              Cerrar Sesión
-            </button>
+              <button className="logout-button" onClick={handleLogout}>
+                Cerrar Sesión
+              </button>
+            </aside>
+
+            {/* Contenedor con Scroll Independiente */}
+            <main className="content-area">
+              {view === "contacts" && <ContactList />}
+              {view === "users" && <UsersList />}
+            </main>
           </div>
-
-          {/* ÁREA DE CONTENIDO */}
-          <div className="content-area">
-            {view === "contacts" && <ContactList />}
-            {view === "users" && <UsersList />}
-          </div>
+            <Footer/> 
         </div>
       )}
     </div>

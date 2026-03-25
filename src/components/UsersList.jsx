@@ -10,8 +10,6 @@ function UsersList() {
     const [error, setError] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
-
-    // ESTADO PARA EL USUARIO EN EDICIÓN
     const [userToEdit, setUserToEdit] = useState(null);
 
     useEffect(() => {
@@ -38,56 +36,54 @@ function UsersList() {
         }
     };
 
-    // MANEJO DE ÉXITO (CREACIÓN O EDICIÓN)
     const handleSuccess = () => {
         loadUsers(); 
         setIsModalOpen(false); 
-        setUserToEdit(null); // Limpiar el usuario tras el éxito
+        setUserToEdit(null);
     };
 
-    // ABRIR MODAL PARA CREAR
     const handleAddClick = () => {
         setUserToEdit(null);
         setIsModalOpen(true);
     };
 
-    // ABRIR MODAL PARA EDITAR
     const handleEditClick = (user) => {
         setUserToEdit(user);
         setIsModalOpen(true);
     };
 
-    // CERRAR MODAL
     const handleCloseModal = () => {
         setIsModalOpen(false);
         setUserToEdit(null);
     };
 
-    const handleDelete = async (id) => {
+    const handleDelete = async (userId) => {
         const result = await Swal.fire({
             title: '¿Estás seguro?',
-            text: "¡No podrás revertir esta acción!",
+            text: "Esta acción eliminará permanentemente al usuario.",
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
+            confirmButtonColor: '#e11d48',
+            cancelButtonColor: '#64748b',
             confirmButtonText: 'Sí, eliminar',
-            cancelButtonText: 'Cancelar'
+            cancelButtonText: 'Cancelar',
+            background: '#ffffff',
+            customClass: {
+                title: 'swal-title-custom'
+            }
         });
 
         if (result.isConfirmed) {
             try {
-                await deleteUser(id);
+                await deleteUser(userId);
                 loadUsers(); 
                 Swal.fire({
                     title: '¡Eliminado!',
-                    text: 'El usuario ha sido borrado correctamente.',
                     icon: 'success',
-                    timer: 2000,
+                    timer: 1500,
                     showConfirmButton: false
                 });
             } catch (err) {
-                console.error("Error al borrar:", err);
                 Swal.fire('Error', 'No se pudo eliminar el usuario.', 'error');
             }
         }
@@ -98,14 +94,20 @@ function UsersList() {
         (user.email?.toLowerCase().includes(searchTerm.toLowerCase()))
     );
 
-    if (loading) return <p className="loading-text">Cargando usuarios...</p>;
+    if (loading) return (
+        <div className="users-container">
+            <p className="loading-text" style={{ textAlign: 'center', padding: '50px', color: '#64748b' }}>
+                Cargando usuarios...
+            </p>
+        </div>
+    );
 
     if (error) {
         return (
             <div className="error-container">
                 <h3 className="error-title">⚠️ Error de Acceso</h3>
                 <p>{error}</p>
-                <button onClick={loadUsers}>Reintentar</button>
+                <button className="btn-add" onClick={loadUsers}>Reintentar</button>
             </div>
         );
     }
@@ -113,9 +115,9 @@ function UsersList() {
     return (
         <div className="users-container">
             <div className="users-header">
-                <h2>Listado de Usuarios</h2>
+                <h2>Gestión de Usuarios</h2>
                 <button className="btn-add" onClick={handleAddClick}>
-                    + Agregar Usuario
+                    + Nuevo Usuario
                 </button>
             </div>
 
@@ -123,7 +125,7 @@ function UsersList() {
                 <input
                     type="text"
                     className="search-input"
-                    placeholder="Filtrar por username o email..."
+                    placeholder="Buscar por username o email..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -131,68 +133,70 @@ function UsersList() {
                     <button 
                         className="btn-clear-search" 
                         onClick={() => setSearchTerm("")}
-                        title="Limpiar búsqueda"
                     >
                         ×
                     </button>
                 )}
             </div>
 
-            {users.length === 0 ? (
-                <p>No hay usuarios registrados en el sistema.</p>
-            ) : (
+            <div className="table-wrapper">
                 <table className="users-table">
                     <thead>
                         <tr>
-                            <th>ID</th>
                             <th>Username</th>
                             <th>Email</th>
-                            <th>Role</th>
+                            <th>Roles</th>
                             <th>Estado</th>
-                            <th>Acciones</th>
+                            <th style={{ textAlign: 'center' }}>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         {filteredUsers.length > 0 ? (
-                            filteredUsers.map(user => (
-                                <tr key={user.id || user._id}>
-                                    <td>{user.id || user._id}</td>
-                                    <td>{user.username}</td>
-                                    <td>{user.email}</td>
-                                    <td>
-                                        {user.roles ? (
-                                            [].concat(user.roles) 
-                                            .map(r => (typeof r === 'object' ? r.name : r))
-                                            .join(", ")
-                                        ) : "Sin rol"}
-                                    </td>
-                                    <td>
-                                        <span className={user.enabled ? "status-active" : "status-inactive"}>
-                                            {user.enabled ? "Activo" : "Inactivo"}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <button className="btn-edit" onClick={() => handleEditClick(user)}>
-                                            Editar
-                                        </button>
-                                        <button className="btn-delete" onClick={() => handleDelete(user.id || user._id)}>
-                                            Eliminar
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))
+                            filteredUsers.map(user => {
+                                const userId = user.id || user._id;
+                                return (
+                                    <tr key={userId}>
+                                        <td style={{ fontWeight: 600 }}>{user.username}</td>
+                                        <td style={{ color: '#64748b' }}>{user.email}</td>
+                                        <td>
+                                            <span style={{ fontSize: '0.85rem' }}>
+                                                {user.roles ? (
+                                                    [].concat(user.roles) 
+                                                    .map(r => (typeof r === 'object' ? r.name : r))
+                                                    .join(", ")
+                                                    .replace(/ROLE_/g, "") // Limpiamos el prefijo para que se vea mejor
+                                                ) : "Sin rol"}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span className={user.enabled ? "status-active" : "status-inactive"}>
+                                                {user.enabled ? "Activo" : "Inactivo"}
+                                            </span>
+                                        </td>
+                                        <td style={{ textAlign: 'center' }}>
+                                            <button className="btn-edit" onClick={() => handleEditClick(user)}>
+                                                Editar
+                                            </button>
+                                            <button className="btn-delete" onClick={() => handleDelete(userId)}>
+                                                Borrar
+                                            </button>
+                                        </td>
+                                    </tr>
+                                );
+                            })
                         ) : (
                             <tr>
-                                <td colSpan="6" className="no-results-td">
-                                    No se encontraron resultados para "{searchTerm}"
+                                <td colSpan="5" className="no-results-td">
+                                    {users.length === 0 
+                                        ? "No hay usuarios registrados." 
+                                        : `No hay coincidencias para "${searchTerm}"`}
                                 </td>
                             </tr>
                         )}
                     </tbody>
                 </table>
-            )}
+            </div>
 
-            {/* MODAL CONFIGURADO CON DATA DINÁMICA */}
             <UserModal 
                 isOpen={isModalOpen} 
                 onClose={handleCloseModal} 

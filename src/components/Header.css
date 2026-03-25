@@ -1,0 +1,153 @@
+/* Estilos del Header - Visual Core Digital */
+
+.navbar {
+  background-color: #002b5c;
+  height: 95px;
+  width: 100%;
+  position: fixed; /* Opcional: lo mantiene arriba al scrollear */
+  top: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: center; /* Centra el contenedor interno */
+}
+
+/* NUEVO: Contenedor que limita el ancho y da aire a los lados */
+.nav-container {
+  width: 100%;
+  max-width: 1200px; /* Evita que el botón se vaya al extremo en pantallas anchas */
+  margin: 0 auto;
+  padding: 0 30px; /* Este es el "aire" que evita que toque los bordes */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 15px; 
+}
+
+.nav-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.5px;
+}
+
+.nav-logo-icon {
+  height: 50px;
+  width: auto;
+  object-fit: contain;
+}
+
+.nav-menu {
+  display: flex;
+  align-items: center;
+  gap: 35px;
+}
+
+.nav-link {
+  color: #e2e8f0;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 8px 12px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.nav-link:hover {
+  color: #ffffff;
+}
+
+.nav-link.active {
+  color: #00A3E0 !important;
+  font-weight: 700;
+}
+
+.nav-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 12px;
+  right: 12px;
+  height: 2px;
+  background-color: #00A3E0;
+  border-radius: 2px;
+}
+
+.title-highlight {
+  color: #00A3E0; 
+}
+
+.btn-contact {
+  background-color: #00A3E0;
+  color: white !important;
+  border: none;
+  padding: 12px 28px; /* Un poco más de cuerpo al botón */
+  border-radius: 50px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 163, 224, 0.2);
+  white-space: nowrap; /* Evita que el texto se rompa en dos líneas */
+}
+
+.btn-contact:hover {
+  background-color: #ffffff;
+  color: #002b5c !important;
+  transform: translateY(-2px);
+}
+
+.mobile-menu-icon {
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 1024px) {
+  .nav-container {
+    padding: 0 20px;
+  }
+  .nav-menu {
+    gap: 15px;
+  }
+}
+
+@media (max-width: 768px) {
+  .mobile-menu-icon {
+    display: block;
+  }
+
+  .nav-menu {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 95px;
+    left: 0;
+    width: 100%;
+    background-color: #002b5c;
+    padding: 30px 20px;
+    gap: 20px;
+    box-shadow: 0 10px 15px rgba(0,0,0,0.3);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .nav-menu.active {
+    display: flex;
+  }
+
+  .nav-link {
+    width: 100%;
+    text-align: center;
+  }
+
+  .btn-contact {
+    width: 100%;
+    text-align: center;
+  }
+}
