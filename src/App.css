@@ -1,125 +1,130 @@
-/* src/App.css */
-
-/* Reset básico */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+/* --- Estructura Base --- */
+html, body, #root, .App {
+    min-height: 100vh; /* Permitimos que crezca si el contenido es largo */
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden; /* Evitamos scroll horizontal */
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    background-color: #f8fafc;
 }
 
-.App {
-  background-color: #f4f7f6;
-  min-height: 100vh;
+.dashboard-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Forzamos que ocupe al menos la pantalla */
 }
 
-/* Estilos para los mensajes de estado (Usados en Login/Forgot/Reset) */
-.error-message {
-  color: #e74c3c;
-  background-color: #fdeaea;
-  padding: 10px;
-  border-radius: 4px;
-  font-size: 0.85rem;
-  margin-bottom: 15px;
-  border: 1px solid #fabebe;
-  text-align: center;
+.dashboard-main {
+    display: flex;
+    flex: 1; /* Esto hace que esta sección empuje al footer hacia abajo */
+    margin-top: 95px; /* El espacio para el Header fijo */
+    /* ELIMINAMOS el height fijo y el overflow: hidden de aquí */
 }
 
-.success-message {
-  color: #27ae60;
-  background-color: #eafaf1;
-  padding: 10px;
-  border-radius: 4px;
-  font-size: 0.85rem;
-  margin-bottom: 15px;
-  border: 1px solid #c3f0d8;
-  text-align: center;
-}
-
-/* Botones tipo link (como el de "Volver") */
-.btn-link {
-  background: none;
-  border: none;
-  color: #3498db;
-  text-decoration: underline;
-  cursor: pointer;
-  margin-top: 15px;
-  font-size: 0.9rem;
-  display: block;
-  width: 100%;
-}
-
-.btn-link:hover {
-  color: #2980b9;
-}
-
-/* --- ESTILOS DEL DASHBOARD (Post-Login) --- */
-
+/* --- Sidebar Izquierdo --- */
 .sidebar {
-  width: 240px;
-  background-color: #2c3e50;
-  color: white;
-  padding: 25px;
-  display: flex;
-  flex-direction: column;
-  transition: all 0.3s ease;
+    width: 260px;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    border-right: 1px solid #e2e8f0;
+    min-height: calc(100vh - 95px); /* Se estira hasta el final */
 }
 
-.sidebar h3 {
-  font-size: 1.2rem;
-  margin-bottom: 25px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+/* CAMBIO: Tarjeta de perfil más suave y profesional */
+.user-profile-card {
+    background-color: #ffffff; 
+    padding: 18px 15px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    display: block !important;
+    visibility: visible !important;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
 }
 
-.user-info-card {
-  background-color: #34495e;
-  padding: 12px;
-  border-radius: 8px;
-  margin-bottom: 30px;
+.welcome-text {
+    color: #64748b; /* Gris suave */
+    font-size: 0.65rem;
+    font-weight: 800;
+    display: block;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
-.sidebar-btn {
-  width: 100%;
-  padding: 12px 15px;
-  margin-bottom: 10px;
-  background: transparent;
-  color: #ecf0f1;
-  border: 1px solid #3e5871;
-  border-radius: 6px;
-  text-align: left;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: background 0.2s;
+.user-name {
+    color: #002b5c; /* El azul ahora solo está en el nombre */
+    font-weight: 700;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-.sidebar-btn:hover {
-  background-color: #3e5871;
+/* --- Botones del Menú Lateral --- */
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
-.sidebar-btn.active {
-  background-color: #3498db;
-  border-color: #3498db;
+.nav-btn {
+    width: 100%;
+    padding: 12px 15px;
+    border: none;
+    border-radius: 8px;
+    background: transparent; 
+    color: #64748b;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
-.logout-btn {
-  margin-top: auto;
-  padding: 12px;
-  background-color: #e74c3c;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: bold;
+.nav-btn:hover:not(.active) {
+    background-color: #f1f5f9;
+    color: #002b5c;
 }
 
-.logout-btn:hover {
-  background-color: #c0392b;
+.nav-btn.active {
+    background-color: #e0f2fe !important; /* Celeste muy suave de fondo */
+    color: #00A3E0 !important; /* Texto celeste */
+    box-shadow: none;
 }
 
+.logout-button {
+    margin-top: auto;
+    padding: 12px;
+    background-color: #ffffff;
+    color: #e11d48;
+    border: 1px solid #fecdd3;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.logout-button:hover {
+    background-color: #fff1f2;
+}
+
+/* --- Área de Contenido --- */
 .content-area {
-  flex: 1;
-  padding: 40px;
-  background-color: #ffffff;
-  box-shadow: inset 2px 0 5px rgba(0,0,0,0.05);
+    flex: 1;
+    background-color: #f8fafc;
+    padding: 30px 40px 60px 40px; 
+    box-sizing: border-box;
+    /* Quitamos el overflow-y: auto para que el scroll sea de la página entera */
+}
+
+.main-footer {
+    width: 100%;
+    z-index: 20; /* Por encima de sombras del sidebar si las hay */
+    background-color: #002b5c;
+    flex-shrink: 0; /* Evita que el footer se aplaste si hay mucho contenido */
 }

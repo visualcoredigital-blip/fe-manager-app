@@ -1,0 +1,98 @@
+/* Estilos del Footer - Visual Core Digital (Refinado) */
+
+.main-footer {
+    background-color: #001529; /* El azul oscuro que ya tenías */
+    color: #ffffff;
+    padding: 30px 0 20px; /* Reducimos el acolchado */
+    width: 100%;
+    margin-top: auto; /* IMPORTANTE: Lo pega al final del flex */
+    border-top: 4px solid #00A3E0;
+}
+
+.footer-container {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr; 
+    gap: 30px;
+    padding-bottom: 20px;
+}
+
+.container-general {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 40px;
+  box-sizing: border-box;
+}
+
+.footer-logo-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.footer-logo-icon {
+  height: 42px; /* Un poco más grande para destacar */
+  width: auto;
+  /* Si el logo tiene fondo oscuro, esto lo hace resaltar */
+  filter: drop-shadow(0 0 5px rgba(0,163,224,0.3));
+}
+
+.footer-title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.5px;
+}
+
+.footer-title .title-highlight {
+  color: #00A3E0;
+}
+
+.footer-tagline {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #cbd5e1; /* Gris claro más legible */
+  max-width: 300px;
+}
+
+.footer-info h4, .footer-social h4 {
+  color: #00A3E0;
+  margin-bottom: 20px;
+  font-size: 0.9rem; /* Un poco más pequeño y elegante */
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-weight: 700;
+}
+
+.footer-info p, .footer-social a {
+  font-size: 0.9rem;
+  margin-bottom: 12px;
+  display: block;
+  color: #94a3b8;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.footer-social a:hover {
+  color: #00A3E0; /* Hover al color de la marca */
+  transform: translateX(5px); /* Efecto sutil de movimiento */
+}
+
+.footer-bottom {
+  text-align: center;
+  padding-top: 30px;
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+/* --- SECCIÓN MOBILE --- */
+@media (max-width: 768px) {
+  .footer-container {
+    grid-template-columns: 1fr;
+    text-align: center;         
+    gap: 40px;
+  }
+  .footer-logo-group { justify-content: center; }
+  .footer-tagline { margin: 0 auto; }
+  .footer-social a:hover { transform: none; }
+}

@@ -1,77 +1,109 @@
-/* Login.css - Versión de Centrado Absoluto */
-
-/* 1. Forzamos que el contenedor ocupe TODA la pantalla sin interferencias */
-.login-page {
-    position: fixed; /* O absolute, para asegurar que ignore otros contenedores */
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    display: flex !important; /* Usamos !important para sobreescribir otros estilos */
-    justify-content: center !important;
-    align-items: center !important;
-    background-color: #f4f7f9;
-    z-index: 999; /* Para que esté por encima de cualquier otro elemento */
+/* RESET GLOBAL PARA ESTA PÁGINA */
+html, body, #root {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
 }
 
-/* 2. La tarjeta de Login con dimensiones más generosas */
+.main-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    width: 100vw; /* Forzamos ancho de pantalla completa */
+    margin: 0;
+    padding: 0;
+    background-color: #f8fafc;
+}
+
+.login-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    /* Aumentamos el min-height para que la tarjeta no quede pegada al footer */
+    min-height: 70vh; 
+    /* Padding superior para el Header fixed y abajo para separar del Footer */
+    padding: 120px 20px 80px; 
+    background-color: #f8fafc;
+    box-sizing: border-box;
+}
+
 .login-card {
-    background: #ffffff;
-    width: 90%; /* Responsivo para móviles */
-    max-width: 450px; /* Tamaño ideal para escritorio */
-    padding: 50px;
-    border-radius: 20px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-    border: 1px solid #eaeaea;
-    text-align: center; /* Centra el texto interno */
+    width: 100%;
+    max-width: 400px;
+    background: white;
+    padding: 50px 40px; /* Un poco más de aire interno arriba y abajo */
+    border-radius: 24px;
+    box-shadow: 0 15px 35px rgba(0, 43, 92, 0.08); /* Sombra más suave y moderna */
+    box-sizing: border-box;
+    text-align: center;
 }
 
-/* 3. Estilos de los elementos internos */
 .login-card h2 {
-    margin-bottom: 35px;
-    font-size: 32px;
-    color: #222;
-    font-weight: 800;
+    color: #002b5c;
+    margin-bottom: 30px;
+    font-weight: 700;
 }
 
+/* ESTILOS DE LOS CAMPOS */
 .form-group {
     margin-bottom: 20px;
-    text-align: left; /* Los inputs mantienen el texto a la izquierda */
+    width: 100%;
 }
 
 .form-group input {
     width: 100%;
-    padding: 15px;
-    border: 1.5px solid #ddd;
+    padding: 12px 15px;
+    border: 1px solid #e2e8f0;
     border-radius: 10px;
-    font-size: 16px;
-    box-sizing: border-box; /* Crucial para que el padding no lo ensanche */
+    font-size: 1rem;
+    box-sizing: border-box; /* Evita que el input se salga de la tarjeta */
 }
 
-/* 4. El Botón "Entrar" */
+/* BOTÓN CORPORATIVO (RECUPERANDO COLORES) */
 .login-button {
+    background-color: #00A3E0; /* Celeste Visual Core */
+    color: white !important;
     width: 100%;
-    padding: 15px;
-    background-color: #007bff;
-    color: white;
+    padding: 14px;
     border: none;
-    border-radius: 10px;
-    font-size: 18px;
-    font-weight: 600;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 1.1rem;
     cursor: pointer;
-    margin-top: 15px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 163, 224, 0.2);
+    margin-top: 10px;
 }
 
-/* 5. Link de recuperación */
+.login-button:hover {
+    background-color: #002b5c; /* Azul oscuro Visual Core */
+    transform: translateY(-2px);
+}
+
+/* LINK OLVIDÓ CONTRASEÑA */
 .forgot-password-container {
-    margin-top: 25px;
+    margin-top: 20px;
 }
 
 .forgot-password-link {
     background: none;
     border: none;
-    color: #007bff;
+    color: #64748b;
+    font-size: 0.9rem;
     cursor: pointer;
     text-decoration: none;
-    font-weight: 500;
+}
+
+.forgot-password-link:hover {
+    color: #00A3E0;
+    text-decoration: underline;
+}
+
+.error-message {
+    color: #e11d48;
+    font-size: 0.85rem;
+    margin-bottom: 15px;
 }

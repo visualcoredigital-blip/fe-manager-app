@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { forgotPassword } from '../services/authService';
-// Reutilizamos el CSS del Login para mantener la consistencia
 import './Login.css'; 
+import Header from './Header'; 
+import Footer from './Footer'; 
 
 const ForgotPassword = ({ onBack }) => {
     const [email, setEmail] = useState('');
@@ -30,45 +31,54 @@ const ForgotPassword = ({ onBack }) => {
     };
 
     return (
-        <div className="login-page">
-            <div className="login-card">
-                <h2>Recuperar Acceso</h2>
-                <p style={{ color: '#666', marginBottom: '20px', fontSize: '0.9rem' }}>
-                    Ingresa tu correo y te enviaremos un enlace para restablecer tu contraseña.
-                </p>
-                
-                <form onSubmit={handleSubmit}>
-                    <div className="form-group">
-                        <input
-                            type="email"
-                            placeholder="Correo electrónico"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                        />
-                    </div>
+        <div className="main-wrapper">
+            {/* 1. Header Superior */}
+            <Header />
 
-                    {status.text && <p className={status.type}>{status.text}</p>}
+            {/* 2. Contenedor Central Centrado */}
+            <main className="login-container">
+                <div className="login-card">
+                    <h2>Recuperar Acceso</h2>
+                    <p style={{ color: '#64748b', marginBottom: '25px', fontSize: '0.95rem', lineHeight: '1.5' }}>
+                        Ingresa tu correo y te enviaremos un enlace para restablecer tu contraseña.
+                    </p>
+                    
+                    <form onSubmit={handleSubmit}>
+                        <div className="form-group">
+                            <input
+                                type="email"
+                                placeholder="Correo electrónico"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                            />
+                        </div>
 
-                    <button 
-                        type="submit" 
-                        className="login-button" 
-                        disabled={loading}
-                    >
-                        {loading ? 'Enviando...' : 'Enviar Enlace'}
-                    </button>
+                        {status.text && <p className={status.type}>{status.text}</p>}
 
-                    <div className="forgot-password-container">
                         <button 
-                            type="button" 
-                            className="forgot-password-link"
-                            onClick={onBack}
+                            type="submit" 
+                            className="login-button" 
+                            disabled={loading}
                         >
-                            Volver al inicio de sesión
+                            {loading ? 'Enviando...' : 'Enviar Enlace'}
                         </button>
-                    </div>
-                </form>
-            </div>
+
+                        <div className="forgot-password-container">
+                            <button 
+                                type="button" 
+                                className="forgot-password-link"
+                                onClick={onBack}
+                            >
+                                ← Volver al inicio de sesión
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </main>
+
+            {/* 3. Footer Inferior */}
+            <Footer />
         </div>
     );
 };

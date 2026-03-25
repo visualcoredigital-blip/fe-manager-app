@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { login } from '../services/authService';
-import './Login.css'; 
+import './Login.css';
+import Header from './Header'; // Asegúrate de que este sea el Header con logo/título
+import Footer from './Footer'; 
 
 const Login = ({ onLoginSuccess, onForgotPassword }) => {
     const [credentials, setCredentials] = useState({ username: '', password: '' });
@@ -24,54 +26,61 @@ const Login = ({ onLoginSuccess, onForgotPassword }) => {
     };
 
     const handleForgotPassword = () => {
-        // Ahora llamamos a la función que nos pasa App.jsx
-        // para cambiar el estado authMode a "forgot"
         onForgotPassword();
     };
 
     return (
-        <div className="login-page">
-            <div className="login-card">
-                <h2>VisualCoreDigital</h2>
-                <form onSubmit={handleSubmit}>
-                    <div className="form-group">
-                        <input
-                            type="text"
-                            name="username"
-                            placeholder="Usuario"
-                            value={credentials.username}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-                    <div className="form-group">
-                        <input
-                            type="password"
-                            name="password"
-                            placeholder="Contraseña"
-                            value={credentials.password}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
+        <div className="main-wrapper">
+            {/* 1. Header en la parte superior */}
+            <Header />
 
-                    {error && <p className="error-message">{error}</p>}
+            {/* 2. Contenedor central para el formulario */}
+            <main className="login-container">
+                <div className="login-card">
+                    <h2>Iniciar Sesión</h2>
+                    <form onSubmit={handleSubmit}>
+                        <div className="form-group">
+                            <input
+                                type="text"
+                                name="username"
+                                placeholder="Usuario"
+                                value={credentials.username}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+                        <div className="form-group">
+                            <input
+                                type="password"
+                                name="password"
+                                placeholder="Contraseña"
+                                value={credentials.password}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
 
-                    <button type="submit" className="login-button">
-                        Entrar
-                    </button>
+                        {error && <p className="error-message">{error}</p>}
 
-                    <div className="forgot-password-container">
-                        <button 
-                            type="button" 
-                            className="forgot-password-link"
-                            onClick={handleForgotPassword}
-                        >
-                            ¿Olvidó su contraseña?
+                        <button type="submit" className="login-button">
+                            Entrar
                         </button>
-                    </div>
-                </form>
-            </div>
+
+                        <div className="forgot-password-container">
+                            <button 
+                                type="button" 
+                                className="forgot-password-link"
+                                onClick={handleForgotPassword}
+                            >
+                                ¿Olvidó su contraseña?
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </main>
+
+            {/* 3. Footer en la parte inferior */}
+            <Footer />
         </div>
     );
 };
