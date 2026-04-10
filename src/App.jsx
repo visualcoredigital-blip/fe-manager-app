@@ -9,7 +9,7 @@ import Footer from './components/Footer';
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [view, setView] = useState("contacts");
-  const [isWakingUp, setIsWakingUp] = useState(true); // Estado para controlar el aviso
+  const [isWakingUp, setIsWakingUp] = useState(true); 
   const username = localStorage.getItem('username');
 
   useEffect(() => {
@@ -20,13 +20,16 @@ function App() {
       ];
 
       try {
+        // Ejecutamos los pings
         const pings = services.map(url => fetch(url).catch(() => {})); 
         await Promise.all(pings);
       } finally {
-        // Agregamos un pequeño retraso de un segundo y quitamos el aviso
-        setTimeout(() => setIsWakingUp(false), 1000);
+        // Importante: un delay de 2 segundos para que el usuario alcance a leer
+        // si el servidor responde demasiado rápido.
+        setTimeout(() => setIsWakingUp(false), 2000);
       }
     };
+    
     wakeUpServices();
 
     const token = localStorage.getItem('token');
@@ -42,17 +45,10 @@ function App() {
   return (
     <div className="App">
       {!isAuthenticated ? (
-        <div className="login-wrapper">
-          {isWakingUp && (
-          <div className="wake-up-notice">
-            <small>
-              🚀 <strong>Visual Core Digital</strong> está iniciando sus módulos de seguridad. 
-              El primer ingreso puede tardar unos segundos.
-            </small>
-          </div>
-          )}
-          <Login onLoginSuccess={() => setIsAuthenticated(true)} />
-        </div>
+        <Login 
+          onLoginSuccess={() => setIsAuthenticated(true)} 
+          isWakingUp={isWakingUp} 
+        />
       ) : (
         <div className="dashboard-container">
           <Header /> 
