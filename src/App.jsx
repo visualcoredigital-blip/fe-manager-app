@@ -13,30 +13,20 @@ function App() {
   const username = localStorage.getItem('username');
 
   useEffect(() => {
-    // --- ESTRATEGIA DE DESPERTADO Render ---
     const wakeUpServices = async () => {
       const services = [
         'https://ms-auth-service-q21j.onrender.com/api/auth/health',
         'https://be-manager-app.onrender.com/api/contacts/health'
       ];
 
-      console.log("Iniciando 'ping' de despertado...");
-      
       try {
-        // Ejecutamos todos los pings
-        const pings = services.map(url => fetch(url, { mode: 'no-cors' }));
+        const pings = services.map(url => fetch(url).catch(() => {})); 
         await Promise.all(pings);
-        
-        // Una vez que los pings terminan (o fallan pero responden), quitamos el aviso
-        console.log("Servicios alertados.");
-        setIsWakingUp(false);
-      } catch (err) {
-        console.log("Esperando respuesta de servicios...");
-        // Si hay error, igual quitamos el aviso tras un tiempo prudente
-        setTimeout(() => setIsWakingUp(false), 5000);
+      } finally {
+        // Agregamos un pequeño retraso de un segundo y quitamos el aviso
+        setTimeout(() => setIsWakingUp(false), 1000);
       }
     };
-
     wakeUpServices();
 
     const token = localStorage.getItem('token');
@@ -61,6 +51,7 @@ function App() {
             </small>
           </div>
           )}
+          <Login onLoginSuccess={() => setIsAuthenticated(true)} />
         </div>
       ) : (
         <div className="dashboard-container">
