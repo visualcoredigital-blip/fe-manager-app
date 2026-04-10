@@ -9,29 +9,36 @@ import Footer from './components/Footer';
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [view, setView] = useState("contacts");
+  const [isWakingUp, setIsWakingUp] = useState(true); // Estado para controlar el aviso
   const username = localStorage.getItem('username');
 
   useEffect(() => {
     // --- ESTRATEGIA DE DESPERTADO Render ---
-    const wakeUpServices = () => {
+    const wakeUpServices = async () => {
       const services = [
-        'https://ms-auth-service-q21j.onrender.com/api/auth/health', // Cambia /health por una ruta real si existe
+        'https://ms-auth-service-q21j.onrender.com/api/auth/health',
         'https://be-manager-app.onrender.com/api/contacts/health'
       ];
 
-      console.log("Iniciando 'ping' de despertado para servicios...");
+      console.log("Iniciando 'ping' de despertado...");
       
-      services.forEach(url => {
-        fetch(url, { mode: 'no-cors' }) // 'no-cors' evita errores de CORS en el ping
-          .then(() => console.log(`Señal enviada a: ${url}`))
-          .catch(err => console.log(`Servicio despertando o inaccesible: ${url}`));
-      });
+      try {
+        // Ejecutamos todos los pings
+        const pings = services.map(url => fetch(url, { mode: 'no-cors' }));
+        await Promise.all(pings);
+        
+        // Una vez que los pings terminan (o fallan pero responden), quitamos el aviso
+        console.log("Servicios alertados.");
+        setIsWakingUp(false);
+      } catch (err) {
+        console.log("Esperando respuesta de servicios...");
+        // Si hay error, igual quitamos el aviso tras un tiempo prudente
+        setTimeout(() => setIsWakingUp(false), 5000);
+      }
     };
 
-    // 1. Despierta los servicios apenas se carga la pestaña
     wakeUpServices();
 
-    // 2. Verificación de token existente
     const token = localStorage.getItem('token');
     if (token) setIsAuthenticated(true);
   }, []);
@@ -45,7 +52,16 @@ function App() {
   return (
     <div className="App">
       {!isAuthenticated ? (
-        <Login onLoginSuccess={() => setIsAuthenticated(true)} />
+        <div className="login-wrapper">
+          {isWakingUp && (
+          <div className="wake-up-notice">
+            <small>
+              🚀 <strong>Visual Core Digital</strong> está iniciando sus módulos de seguridad. 
+              El primer ingreso puede tardar unos segundos.
+            </small>
+          </div>
+          )}
+        </div>
       ) : (
         <div className="dashboard-container">
           <Header /> 
