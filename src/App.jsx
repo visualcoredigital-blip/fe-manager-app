@@ -53,16 +53,13 @@ function App() {
     <div className="App">
       {!isAuthenticated ? (
         <div className="login-wrapper">
-          <Login onLoginSuccess={() => setIsAuthenticated(true)} />
-          
-          {/* MENSAJE INFORMATIVO DE RENDER FREE */}
           {isWakingUp && (
-            <div className="wake-up-notice">
-              <small>
-                ⏳ <strong>Nota:</strong> Los servicios están despertando. 
-                El primer intento de ingreso podría tardar unos segundos.
-              </small>
-            </div>
+          <div className="wake-up-notice">
+            <small>
+              🚀 <strong>Visual Core Digital</strong> está iniciando sus módulos de seguridad. 
+              El primer ingreso puede tardar unos segundos.
+            </small>
+          </div>
           )}
         </div>
       ) : (
