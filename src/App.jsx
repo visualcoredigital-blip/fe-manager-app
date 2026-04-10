@@ -12,6 +12,26 @@ function App() {
   const username = localStorage.getItem('username');
 
   useEffect(() => {
+    // --- ESTRATEGIA DE DESPERTADO Render ---
+    const wakeUpServices = () => {
+      const services = [
+        'https://ms-auth-service-q21j.onrender.com/api/auth/health', // Cambia /health por una ruta real si existe
+        'https://be-manager-app.onrender.com/api/contacts/health'
+      ];
+
+      console.log("Iniciando 'ping' de despertado para servicios...");
+      
+      services.forEach(url => {
+        fetch(url, { mode: 'no-cors' }) // 'no-cors' evita errores de CORS en el ping
+          .then(() => console.log(`Señal enviada a: ${url}`))
+          .catch(err => console.log(`Servicio despertando o inaccesible: ${url}`));
+      });
+    };
+
+    // 1. Despierta los servicios apenas se carga la pestaña
+    wakeUpServices();
+
+    // 2. Verificación de token existente
     const token = localStorage.getItem('token');
     if (token) setIsAuthenticated(true);
   }, []);
@@ -32,11 +52,10 @@ function App() {
 
           <div className="dashboard-main">
             <aside className="sidebar">
-              {/* Bloque de Usuario Corporativo */}
-            <div className="user-profile-card">
-              <small className="welcome-text">BIENVENIDO,</small>
-              <div className="user-name">👤 {username || 'Usuario'}</div>
-            </div>              
+              <div className="user-profile-card">
+                <small className="welcome-text">BIENVENIDO,</small>
+                <div className="user-name">👤 {username || 'Usuario'}</div>
+              </div>              
               <nav className="sidebar-nav">
                 <button 
                   className={`nav-btn ${view === "contacts" ? "active" : ""}`} 
@@ -57,13 +76,12 @@ function App() {
               </button>
             </aside>
 
-            {/* Contenedor con Scroll Independiente */}
             <main className="content-area">
               {view === "contacts" && <ContactList />}
               {view === "users" && <UsersList />}
             </main>
           </div>
-            <Footer/> 
+          <Footer/> 
         </div>
       )}
     </div>
