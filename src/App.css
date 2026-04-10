@@ -174,3 +174,15 @@ html, body, #root, .App {
         transform: translateY(0); 
     }
 }
+
+.wake-up-notice-inline {
+    background-color: #e0f2fe;
+    color: #0369a1;
+    padding: 8px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    font-size: 0.8rem;
+    text-align: center;
+    border: 1px solid #bae6fd;
+    animation: fadeIn 0.5s ease;
+}
