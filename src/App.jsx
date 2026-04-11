@@ -3,8 +3,8 @@ import Login from './components/Login';
 import ContactList from './components/ContactList';
 import UsersList from './components/UsersList';
 import Header from './components/Header';
-import './App.css';
 import Footer from './components/Footer';
+import './App.css';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -18,20 +18,15 @@ function App() {
         'https://ms-auth-service-q21j.onrender.com/api/auth/health',
         'https://be-manager-app.onrender.com/api/contacts/health'
       ];
-
       try {
-        // Ejecutamos los pings
         const pings = services.map(url => fetch(url).catch(() => {})); 
         await Promise.all(pings);
       } finally {
-        // Importante: un delay de 2 segundos para que el usuario alcance a leer
-        // si el servidor responde demasiado rápido.
         setTimeout(() => setIsWakingUp(false), 2000);
       }
     };
     
     wakeUpServices();
-
     const token = localStorage.getItem('token');
     if (token) setIsAuthenticated(true);
   }, []);
@@ -45,14 +40,15 @@ function App() {
   return (
     <div className="App">
       {!isAuthenticated ? (
+        /* IMPORTANTE: Solo renderizamos Login. Él maneja su propio Header/Footer */
         <Login 
           onLoginSuccess={() => setIsAuthenticated(true)} 
           isWakingUp={isWakingUp} 
         />
-          ) : (
+      ) : (
+        /* Dashboard con estructura de Sidebar */
         <div className="dashboard-container">
           <Header /> 
-
           <div className="dashboard-main">
             <aside className="sidebar">
               <div className="user-profile-card">
@@ -73,7 +69,6 @@ function App() {
                   👥 Usuarios
                 </button>
               </nav>
-
               <button className="logout-button" onClick={handleLogout}>
                 Cerrar Sesión
               </button>

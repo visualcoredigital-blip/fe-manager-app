@@ -10,7 +10,7 @@ html, body, #root {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    width: 100vw;
+    width: 100%;
     margin: 0;
     padding: 0;
     background-color: #f8fafc;
@@ -23,9 +23,8 @@ html, body, #root {
     justify-content: center;
     align-items: center;
     width: 100%;
-    min-height: 70vh; 
-    padding: 120px 20px 80px; 
-    background-color: #f8fafc;
+    /* Espacio para el Header y Footer */
+    padding: 40px 20px; 
     box-sizing: border-box;
 }
 
@@ -39,35 +38,35 @@ html, body, #root {
     box-shadow: 0 15px 35px rgba(0, 43, 92, 0.08);
     box-sizing: border-box;
     text-align: center;
-    display: flex;
-    flex-direction: column;
+    /* Animación de entrada suave para la tarjeta */
+    animation: fadeInSlide 0.6s ease-out;
 }
 
 .login-card h2 {
     color: #002b5c;
-    margin: 10px 0 30px 0; /* Ajustado para dar aire si no hay aviso */
+    margin: 10px 0 30px;
     font-weight: 700;
 }
 
-/* --- AVISO DE DESPERTADO (WAKE UP NOTICE) --- */
+/* --- ESTILO DEL MENSAJE "DESPERTANDO" --- */
 .wake-up-notice-inline {
     background-color: #e0f2fe;
     color: #0369a1;
-    padding: 12px 15px;
+    padding: 12px;
     border-radius: 12px;
-    margin-bottom: 5px; /* Pequeño margen antes del h2 */
+    margin-bottom: 20px;
     font-size: 0.85rem;
     text-align: center;
     border: 1px solid #bae6fd;
     line-height: 1.4;
-    animation: fadeInDown 0.5s ease-out;
+    animation: fadeInDown 0.5s ease;
 }
 
 .wake-up-notice-inline strong {
     color: #002b5c;
 }
 
-/* --- ESTILOS DEL FORMULARIO --- */
+/* --- ESTILOS DE LOS CAMPOS --- */
 .form-group {
     margin-bottom: 20px;
     width: 100%;
@@ -80,15 +79,16 @@ html, body, #root {
     border-radius: 10px;
     font-size: 1rem;
     box-sizing: border-box;
-    transition: border-color 0.2s;
+    transition: all 0.2s ease;
 }
 
 .form-group input:focus {
     outline: none;
     border-color: #00A3E0;
+    box-shadow: 0 0 0 3px rgba(0, 163, 224, 0.1);
 }
 
-/* --- BOTÓN ENTRAR --- */
+/* --- BOTÓN CORPORATIVO --- */
 .login-button {
     background-color: #00A3E0;
     color: white !important;
@@ -109,10 +109,58 @@ html, body, #root {
     transform: translateY(-2px);
 }
 
-/* --- OLVIDÓ CONTRASEÑA --- */
+.login-button:active {
+    transform: translateY(0);
+}
+
+/* --- LINK OLVIDÓ CONTRASEÑA --- */
 .forgot-password-container {
     margin-top: 20px;
 }
 
 .forgot-password-link {
     background: none;
+    border: none;
+    color: #64748b;
+    font-size: 0.9rem;
+    cursor: pointer;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.forgot-password-link:hover {
+    color: #00A3E0;
+    text-decoration: underline;
+}
+
+.error-message {
+    color: #e11d48;
+    font-size: 0.85rem;
+    margin-bottom: 15px;
+    background: #fff1f2;
+    padding: 8px;
+    border-radius: 6px;
+}
+
+/* --- ANIMACIONES --- */
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInSlide {
+    from { 
+        opacity: 0; 
+        transform: translateY(20px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}

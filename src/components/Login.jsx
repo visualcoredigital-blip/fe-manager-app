@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { login } from '../services/authService';
 import './Login.css';
-import Header from './Header'; 
+import Header from './Header';
 import Footer from './Footer'; 
 
 const Login = ({ onLoginSuccess, onForgotPassword, isWakingUp }) => {
@@ -25,22 +25,17 @@ const Login = ({ onLoginSuccess, onForgotPassword, isWakingUp }) => {
         }
     };
 
-    const handleForgotPassword = () => {
-        onForgotPassword();
-    };
-
     return (
         <div className="main-wrapper">
             <Header />
 
             <main className="login-container">
                 <div className="login-card">
-                    
+                    {/* AVISO DE DESPERTADO: Dentro del Card para mantener el diseño */}
                     {isWakingUp && (
                         <div className="wake-up-notice-inline">
                             <small>
-                                🚀 <strong>VisualCoreDigital:</strong> Preparando módulos de seguridad... 
-                                El primer ingreso puede tardar unos segundos.
+                                🚀 <strong>Sistemas:</strong> Preparando módulos de seguridad...
                             </small>
                         </div>
                     )}
@@ -78,7 +73,7 @@ const Login = ({ onLoginSuccess, onForgotPassword, isWakingUp }) => {
                             <button 
                                 type="button" 
                                 className="forgot-password-link"
-                                onClick={handleForgotPassword}
+                                onClick={onForgotPassword}
                             >
                                 ¿Olvidó su contraseña?
                             </button>

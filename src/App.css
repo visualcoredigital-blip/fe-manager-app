@@ -8,7 +8,7 @@ html, body, #root, .App {
     background-color: #f8fafc;
 }
 
-/* Contenedor principal para cuando el usuario ya entró */
+/* --- Contenedor del Dashboard --- */
 .dashboard-container {
     display: flex;
     flex-direction: column;
@@ -17,8 +17,8 @@ html, body, #root, .App {
 
 .dashboard-main {
     display: flex;
-    flex: 1;
-    margin-top: 95px; /* Altura del Header fijo */
+    flex: 1; 
+    margin-top: 95px; /* Altura para el Header fijo */
 }
 
 /* --- Sidebar Izquierdo --- */
@@ -29,8 +29,7 @@ html, body, #root, .App {
     flex-direction: column;
     padding: 20px;
     border-right: 1px solid #e2e8f0;
-    /* Se ajusta para no quedar debajo del footer */
-    min-height: calc(100vh - 95px); 
+    min-height: calc(100vh - 95px);
 }
 
 .user-profile-card {
@@ -120,12 +119,11 @@ html, body, #root, .App {
 
 .main-footer {
     width: 100%;
-    z-index: 20;
     background-color: #002b5c;
     flex-shrink: 0;
 }
 
-/* --- Animaciones Globales --- */
+/* --- Animaciones --- */
 @keyframes fadeInSlide {
     from { 
         opacity: 0; 
