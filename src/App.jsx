@@ -49,7 +49,7 @@ function App() {
           onLoginSuccess={() => setIsAuthenticated(true)} 
           isWakingUp={isWakingUp} 
         />
-      ) : (
+          ) : (
         <div className="dashboard-container">
           <Header /> 
 
