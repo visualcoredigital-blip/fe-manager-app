@@ -1,24 +1,24 @@
 /* --- Estructura Base --- */
 html, body, #root, .App {
-    min-height: 100vh; /* Permitimos que crezca si el contenido es largo */
+    min-height: 100vh;
     margin: 0;
     padding: 0;
-    overflow-x: hidden; /* Evitamos scroll horizontal */
+    overflow-x: hidden;
     font-family: 'Segoe UI', Roboto, sans-serif;
     background-color: #f8fafc;
 }
 
+/* --- Contenedor del Dashboard --- */
 .dashboard-container {
     display: flex;
     flex-direction: column;
-    min-height: 100vh; /* Forzamos que ocupe al menos la pantalla */
+    min-height: 100vh;
 }
 
 .dashboard-main {
     display: flex;
-    flex: 1; /* Esto hace que esta sección empuje al footer hacia abajo */
-    margin-top: 95px; /* El espacio para el Header fijo */
-    /* ELIMINAMOS el height fijo y el overflow: hidden de aquí */
+    flex: 1; 
+    margin-top: 95px; /* Altura para el Header fijo */
 }
 
 /* --- Sidebar Izquierdo --- */
@@ -29,23 +29,20 @@ html, body, #root, .App {
     flex-direction: column;
     padding: 20px;
     border-right: 1px solid #e2e8f0;
-    min-height: calc(100vh - 95px); /* Se estira hasta el final */
+    min-height: calc(100vh - 95px);
 }
 
-/* CAMBIO: Tarjeta de perfil más suave y profesional */
 .user-profile-card {
     background-color: #ffffff; 
     padding: 18px 15px;
     border-radius: 12px;
     margin-bottom: 25px;
-    display: block !important;
-    visibility: visible !important;
     border: 1px solid #e2e8f0;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
 }
 
 .welcome-text {
-    color: #64748b; /* Gris suave */
+    color: #64748b;
     font-size: 0.65rem;
     font-weight: 800;
     display: block;
@@ -55,7 +52,7 @@ html, body, #root, .App {
 }
 
 .user-name {
-    color: #002b5c; /* El azul ahora solo está en el nombre */
+    color: #002b5c;
     font-weight: 700;
     font-size: 1.1rem;
     display: flex;
@@ -92,9 +89,8 @@ html, body, #root, .App {
 }
 
 .nav-btn.active {
-    background-color: #e0f2fe !important; /* Celeste muy suave de fondo */
-    color: #00A3E0 !important; /* Texto celeste */
-    box-shadow: none;
+    background-color: #e0f2fe !important;
+    color: #00A3E0 !important;
 }
 
 .logout-button {
@@ -119,51 +115,15 @@ html, body, #root, .App {
     background-color: #f8fafc;
     padding: 30px 40px 60px 40px; 
     box-sizing: border-box;
-    /* Quitamos el overflow-y: auto para que el scroll sea de la página entera */
 }
 
 .main-footer {
     width: 100%;
-    z-index: 20; /* Por encima de sombras del sidebar si las hay */
     background-color: #002b5c;
-    flex-shrink: 0; /* Evita que el footer se aplaste si hay mucho contenido */
+    flex-shrink: 0;
 }
 
-/* --- Sección de Login y Mensaje de Despertado --- */
-
-/* Contenedor para centrar el login y el aviso */
-.login-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    background-color: #f8fafc; /* Fondo suave igual al resto */
-    gap: 20px;
-    padding: 20px;
-}
-
-.wake-up-notice {
-    background-color: #ffffff;
-    border-left: 4px solid #00A3E0; /* Azul de tu botón Entrar */
-    padding: 15px 25px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    max-width: 420px;
-    text-align: center;
-    animation: fadeInSlide 0.6s ease-out;
-}
-
-.wake-up-notice small {
-    color: #475569;
-    font-size: 0.9rem;
-    line-height: 1.4;
-}
-
-.wake-up-notice strong {
-    color: #002b5c; /* Azul oscuro de tu marca */
-}
-
+/* --- Animaciones --- */
 @keyframes fadeInSlide {
     from { 
         opacity: 0; 
@@ -173,16 +133,4 @@ html, body, #root, .App {
         opacity: 1; 
         transform: translateY(0); 
     }
-}
-
-.wake-up-notice-inline {
-    background-color: #e0f2fe;
-    color: #0369a1;
-    padding: 8px;
-    border-radius: 6px;
-    margin-bottom: 15px;
-    font-size: 0.8rem;
-    text-align: center;
-    border: 1px solid #bae6fd;
-    animation: fadeIn 0.5s ease;
 }

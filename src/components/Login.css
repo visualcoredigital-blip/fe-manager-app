@@ -10,7 +10,7 @@ html, body, #root {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    width: 100vw; /* Forzamos ancho de pantalla completa */
+    width: 100%;
     margin: 0;
     padding: 0;
     background-color: #f8fafc;
@@ -22,11 +22,8 @@ html, body, #root {
     justify-content: center;
     align-items: center;
     width: 100%;
-    /* Aumentamos el min-height para que la tarjeta no quede pegada al footer */
-    min-height: 70vh; 
-    /* Padding superior para el Header fixed y abajo para separar del Footer */
-    padding: 120px 20px 80px; 
-    background-color: #f8fafc;
+    /* Espacio para el Header y Footer */
+    padding: 40px 20px; 
     box-sizing: border-box;
 }
 
@@ -34,20 +31,40 @@ html, body, #root {
     width: 100%;
     max-width: 400px;
     background: white;
-    padding: 50px 40px; /* Un poco más de aire interno arriba y abajo */
+    padding: 50px 40px;
     border-radius: 24px;
-    box-shadow: 0 15px 35px rgba(0, 43, 92, 0.08); /* Sombra más suave y moderna */
+    box-shadow: 0 15px 35px rgba(0, 43, 92, 0.08);
     box-sizing: border-box;
     text-align: center;
+    /* Animación de entrada suave para la tarjeta */
+    animation: fadeInSlide 0.6s ease-out;
 }
 
 .login-card h2 {
     color: #002b5c;
-    margin-bottom: 30px;
+    margin: 10px 0 30px;
     font-weight: 700;
 }
 
-/* ESTILOS DE LOS CAMPOS */
+/* --- ESTILO DEL MENSAJE "DESPERTANDO" --- */
+.wake-up-notice-inline {
+    background-color: #e0f2fe;
+    color: #0369a1;
+    padding: 12px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    font-size: 0.85rem;
+    text-align: center;
+    border: 1px solid #bae6fd;
+    line-height: 1.4;
+    animation: fadeInDown 0.5s ease;
+}
+
+.wake-up-notice-inline strong {
+    color: #002b5c;
+}
+
+/* --- ESTILOS DE LOS CAMPOS --- */
 .form-group {
     margin-bottom: 20px;
     width: 100%;
@@ -59,12 +76,19 @@ html, body, #root {
     border: 1px solid #e2e8f0;
     border-radius: 10px;
     font-size: 1rem;
-    box-sizing: border-box; /* Evita que el input se salga de la tarjeta */
+    box-sizing: border-box;
+    transition: all 0.2s ease;
 }
 
-/* BOTÓN CORPORATIVO (RECUPERANDO COLORES) */
+.form-group input:focus {
+    outline: none;
+    border-color: #00A3E0;
+    box-shadow: 0 0 0 3px rgba(0, 163, 224, 0.1);
+}
+
+/* --- BOTÓN CORPORATIVO --- */
 .login-button {
-    background-color: #00A3E0; /* Celeste Visual Core */
+    background-color: #00A3E0;
     color: white !important;
     width: 100%;
     padding: 14px;
@@ -79,11 +103,15 @@ html, body, #root {
 }
 
 .login-button:hover {
-    background-color: #002b5c; /* Azul oscuro Visual Core */
+    background-color: #002b5c;
     transform: translateY(-2px);
 }
 
-/* LINK OLVIDÓ CONTRASEÑA */
+.login-button:active {
+    transform: translateY(0);
+}
+
+/* --- LINK OLVIDÓ CONTRASEÑA --- */
 .forgot-password-container {
     margin-top: 20px;
 }
@@ -95,6 +123,7 @@ html, body, #root {
     font-size: 0.9rem;
     cursor: pointer;
     text-decoration: none;
+    transition: color 0.2s;
 }
 
 .forgot-password-link:hover {
@@ -106,4 +135,30 @@ html, body, #root {
     color: #e11d48;
     font-size: 0.85rem;
     margin-bottom: 15px;
+    background: #fff1f2;
+    padding: 8px;
+    border-radius: 6px;
+}
+
+/* --- ANIMACIONES --- */
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInSlide {
+    from { 
+        opacity: 0; 
+        transform: translateY(20px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
 }

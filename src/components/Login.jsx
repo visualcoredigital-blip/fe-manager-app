@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { login } from '../services/authService';
 import './Login.css';
-import Header from './Header'; // Asegúrate de que este sea el Header con logo/título
+import Header from './Header';
 import Footer from './Footer'; 
 
-const Login = ({ onLoginSuccess, onForgotPassword }) => {
+const Login = ({ onLoginSuccess, onForgotPassword, isWakingUp }) => {
     const [credentials, setCredentials] = useState({ username: '', password: '' });
     const [error, setError] = useState('');
 
@@ -25,18 +25,21 @@ const Login = ({ onLoginSuccess, onForgotPassword }) => {
         }
     };
 
-    const handleForgotPassword = () => {
-        onForgotPassword();
-    };
-
     return (
         <div className="main-wrapper">
-            {/* 1. Header en la parte superior */}
             <Header />
 
-            {/* 2. Contenedor central para el formulario */}
             <main className="login-container">
                 <div className="login-card">
+                    {/* AVISO DE DESPERTADO: Dentro del Card para mantener el diseño */}
+                    {isWakingUp && (
+                        <div className="wake-up-notice-inline">
+                            <small>
+                                🚀 <strong>Sistemas:</strong> Preparando módulos de seguridad...
+                            </small>
+                        </div>
+                    )}
+
                     <h2>Iniciar Sesión</h2>
                     <form onSubmit={handleSubmit}>
                         <div className="form-group">
@@ -70,7 +73,7 @@ const Login = ({ onLoginSuccess, onForgotPassword }) => {
                             <button 
                                 type="button" 
                                 className="forgot-password-link"
-                                onClick={handleForgotPassword}
+                                onClick={onForgotPassword}
                             >
                                 ¿Olvidó su contraseña?
                             </button>
@@ -79,7 +82,6 @@ const Login = ({ onLoginSuccess, onForgotPassword }) => {
                 </div>
             </main>
 
-            {/* 3. Footer en la parte inferior */}
             <Footer />
         </div>
     );
