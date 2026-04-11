@@ -1,4 +1,4 @@
-/* RESET GLOBAL PARA ESTA PÁGINA */
+/* --- RESET Y ESTRUCTURA GLOBAL --- */
 html, body, #root {
     margin: 0;
     padding: 0;
@@ -10,44 +10,64 @@ html, body, #root {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    width: 100vw; /* Forzamos ancho de pantalla completa */
+    width: 100vw;
     margin: 0;
     padding: 0;
     background-color: #f8fafc;
 }
 
+/* --- CONTENEDOR PRINCIPAL --- */
 .login-container {
     flex: 1;
     display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
-    /* Aumentamos el min-height para que la tarjeta no quede pegada al footer */
     min-height: 70vh; 
-    /* Padding superior para el Header fixed y abajo para separar del Footer */
     padding: 120px 20px 80px; 
     background-color: #f8fafc;
     box-sizing: border-box;
 }
 
+/* --- TARJETA DE LOGIN --- */
 .login-card {
     width: 100%;
     max-width: 400px;
     background: white;
-    padding: 50px 40px; /* Un poco más de aire interno arriba y abajo */
+    padding: 50px 40px;
     border-radius: 24px;
-    box-shadow: 0 15px 35px rgba(0, 43, 92, 0.08); /* Sombra más suave y moderna */
+    box-shadow: 0 15px 35px rgba(0, 43, 92, 0.08);
     box-sizing: border-box;
     text-align: center;
+    display: flex;
+    flex-direction: column;
 }
 
 .login-card h2 {
     color: #002b5c;
-    margin-bottom: 30px;
+    margin: 10px 0 30px 0; /* Ajustado para dar aire si no hay aviso */
     font-weight: 700;
 }
 
-/* ESTILOS DE LOS CAMPOS */
+/* --- AVISO DE DESPERTADO (WAKE UP NOTICE) --- */
+.wake-up-notice-inline {
+    background-color: #e0f2fe;
+    color: #0369a1;
+    padding: 12px 15px;
+    border-radius: 12px;
+    margin-bottom: 5px; /* Pequeño margen antes del h2 */
+    font-size: 0.85rem;
+    text-align: center;
+    border: 1px solid #bae6fd;
+    line-height: 1.4;
+    animation: fadeInDown 0.5s ease-out;
+}
+
+.wake-up-notice-inline strong {
+    color: #002b5c;
+}
+
+/* --- ESTILOS DEL FORMULARIO --- */
 .form-group {
     margin-bottom: 20px;
     width: 100%;
@@ -59,12 +79,18 @@ html, body, #root {
     border: 1px solid #e2e8f0;
     border-radius: 10px;
     font-size: 1rem;
-    box-sizing: border-box; /* Evita que el input se salga de la tarjeta */
+    box-sizing: border-box;
+    transition: border-color 0.2s;
 }
 
-/* BOTÓN CORPORATIVO (RECUPERANDO COLORES) */
+.form-group input:focus {
+    outline: none;
+    border-color: #00A3E0;
+}
+
+/* --- BOTÓN ENTRAR --- */
 .login-button {
-    background-color: #00A3E0; /* Celeste Visual Core */
+    background-color: #00A3E0;
     color: white !important;
     width: 100%;
     padding: 14px;
@@ -79,31 +105,14 @@ html, body, #root {
 }
 
 .login-button:hover {
-    background-color: #002b5c; /* Azul oscuro Visual Core */
+    background-color: #002b5c;
     transform: translateY(-2px);
 }
 
-/* LINK OLVIDÓ CONTRASEÑA */
+/* --- OLVIDÓ CONTRASEÑA --- */
 .forgot-password-container {
     margin-top: 20px;
 }
 
 .forgot-password-link {
     background: none;
-    border: none;
-    color: #64748b;
-    font-size: 0.9rem;
-    cursor: pointer;
-    text-decoration: none;
-}
-
-.forgot-password-link:hover {
-    color: #00A3E0;
-    text-decoration: underline;
-}
-
-.error-message {
-    color: #e11d48;
-    font-size: 0.85rem;
-    margin-bottom: 15px;
-}
