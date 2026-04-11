@@ -31,13 +31,13 @@ html, body, #root {
     width: 100%;
     max-width: 400px;
     background: white;
-    padding: 50px 40px;
+    padding: 60px 40px 50px; 
     border-radius: 24px;
     box-shadow: 0 15px 35px rgba(0, 43, 92, 0.08);
     box-sizing: border-box;
     text-align: center;
-    /* Animación de entrada suave para la tarjeta */
-    animation: fadeInSlide 0.6s ease-out;
+    display: flex;
+    flex-direction: column;
 }
 
 .login-card h2 {
@@ -50,14 +50,15 @@ html, body, #root {
 .wake-up-notice-inline {
     background-color: #e0f2fe;
     color: #0369a1;
-    padding: 12px;
+    padding: 12px 15px;
     border-radius: 12px;
-    margin-bottom: 20px;
+    margin-top: -10px; /* Lo subimos un poco para equilibrar el padding del card */
+    margin-bottom: 25px; 
     font-size: 0.85rem;
     text-align: center;
     border: 1px solid #bae6fd;
     line-height: 1.4;
-    animation: fadeInDown 0.5s ease;
+    animation: fadeInDown 0.5s ease-out;
 }
 
 .wake-up-notice-inline strong {
