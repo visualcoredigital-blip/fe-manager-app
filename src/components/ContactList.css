@@ -2,6 +2,10 @@
 
 .contact-list-container {
     padding: 20px;
+    /* IMPORTANTE: Altura fija para que el scroll virtual funcione correctamente */
+    height: calc(100vh - 100px); 
+    display: flex;
+    flex-direction: column;
 }
 
 .contact-list-header {
@@ -9,6 +13,7 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 25px;
+    flex-shrink: 0; /* Evita que el header se comprima */
 }
 
 .contact-list-title {
@@ -17,82 +22,58 @@
     font-weight: 800;
 }
 
-.status-indicator {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: #64748b;
+/* --- CONTENEDOR DE LA TABLA VIRTUAL --- */
+.virtuoso-container {
+    flex-grow: 1; /* Ocupa todo el espacio restante */
+    background-color: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    border: 1px solid #f1f5f9;
 }
 
-.read-only-badge {
-    background-color: #e2e8f0;
-    color: #475569;
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: 600;
-}
-
-/* Sección de Error */
-.error-container {
-    padding: 20px;
-    background-color: #fff1f2;
-    border: 1px solid #fda4af;
-    border-radius: 10px;
-    margin-bottom: 20px;
-    text-align: center;
-}
-
-.error-text {
-    color: #9f1239;
-    font-weight: 600;
-    margin: 0 0 10px 0;
-}
-
-.retry-button {
-    padding: 8px 16px;
-    background-color: #9f1239;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 700;
-    transition: 0.2s;
-}
-
-.retry-button:hover {
-    background-color: #e11d48;
-}
-
-/* Tabla */
+/* Tabla Optimizada */
 .custom-table {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
     background-color: white;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    table-layout: fixed; 
 }
 
-.custom-table thead tr {
+/* Sticky Header (Cabecera fija al hacer scroll) */
+.custom-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
     background-color: #f1f5f9;
-}
-
-.custom-table th {
     padding: 18px 15px;
     color: #475569;
     text-align: left;
     font-weight: 700;
     border-bottom: 2px solid #e2e8f0;
+    box-shadow: 0 1px 0 #e2e8f0;
 }
 
 .custom-table td {
     padding: 15px;
     color: #1e293b;
     border-bottom: 1px solid #f1f5f9;
+    /* Evita que celdas con mucho texto expandan la columna */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-/* Badges de Estado */
+/* ASIGNACIÓN DE ANCHOS FIJOS (Ajusta los % según prefieras) */
+.custom-table th:nth-child(1), .custom-table td:nth-child(1) { width: 25%; } /* Nombre */
+.custom-table th:nth-child(2), .custom-table td:nth-child(2) { width: 30%; } /* Email */
+.custom-table th:nth-child(3), .custom-table td:nth-child(3) { width: 15%; } /* Teléfono */
+.custom-table th:nth-child(4), .custom-table td:nth-child(4) { width: 15%; } /* Estado */
+.custom-table th:nth-child(5), .custom-table td:nth-child(5) { width: 15%; } /* Acciones */
+
+/* --- RESTO DE TUS ESTILOS IGUALES --- */
+
 .status-badge {
     padding: 5px 12px;
     border-radius: 6px;
@@ -110,7 +91,6 @@
     color: #854d0e;
 }
 
-/* Botón Gestionar */
 .manage-btn {
     padding: 7px 14px;
     background-color: #00A3E0;
@@ -126,7 +106,7 @@
     background-color: #0082b3;
 }
 
-/* Modal */
+/* Modal se mantiene igual */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -147,30 +127,4 @@
     border-radius: 15px;
     width: 400px;
     box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);
-    color: #1e293b;
-}
-
-.modal-checkbox-container {
-    background-color: #f8fafc;
-    padding: 15px;
-    border-radius: 10px;
-    margin-bottom: 25px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-/* Skeleton Pulse */
-.skeleton-row {
-    height: 20px;
-    background-color: #f1f5f9;
-    border-radius: 4px;
-    margin: 10px 0;
-    animation: pulse 1.5s infinite ease-in-out;
-}
-
-@keyframes pulse {
-    0% { opacity: 1; }
-    50% { opacity: 0.4; }
-    100% { opacity: 1; }
 }
