@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useState, useMemo } from 'react';
+import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { TableVirtuoso } from 'react-virtuoso';
 import { getContacts, updateContactStatus } from '../services/contactService';
 import { jwtDecode } from 'jwt-decode';
-import './ContactList.css'; // Importamos los estilos
+import './ContactList.css';
 
 const ContactSkeleton = ({ isAdmin }) => (
     <>
@@ -18,36 +20,77 @@ const ContactSkeleton = ({ isAdmin }) => (
 );
 
 const ContactList = () => {
-    const [contacts, setContacts] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(false);
+    const queryClient = useQueryClient();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedContact, setSelectedContact] = useState(null);
 
+    // Lógica de Auth
     const token = localStorage.getItem('token');
-    let isAdmin = false;
-
-    if (token) {
+    const isAdmin = useMemo(() => {
+        if (!token) return false;
         try {
-            const decoded = jwtDecode(token);
-            isAdmin = decoded.role === 'ROLE_ADMIN';
-        } catch (err) { console.error(err); }
-    }
+            return jwtDecode(token).role === 'ROLE_ADMIN';
+        } catch { return false; }
+    }, [token]);
 
-    const fetchContacts = async () => {
-        setLoading(true);
-        setError(false);
-        try {
-            const data = await getContacts();
-            setContacts(data);
-        } catch (err) {
-            setError(true);
-        } finally {
-            setLoading(false);
-        }
+    // --- 1. Carga Infinita (20k registros) ---
+    const {
+        data,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage,
+        status,
+        error
+    } = useInfiniteQuery({
+        queryKey: ['contacts'],
+        queryFn: ({ pageParam = 0 }) => getContacts(pageParam, 50), // Usamos la paginación de Java
+        getNextPageParam: (lastPage) => {
+            // Spring Boot Page object nos dice si es la última página
+            return lastPage.last ? undefined : lastPage.number + 1;
+        },
+    });
+
+    // Aplanamos los datos de las páginas para la tabla virtual
+    const allContacts = useMemo(() => 
+        data?.pages.flatMap(page => page.content) || [], 
+    [data]);
+
+    // --- 2. Mutación Optimista (Cambio Instantáneo) ---
+    const mutation = useMutation({
+        mutationFn: ({ id, estado }) => updateContactStatus(id, estado),
+        onMutate: async (updatedContact) => {
+            await queryClient.cancelQueries({ queryKey: ['contacts'] });
+            const previousData = queryClient.getQueryData(['contacts']);
+
+            // Actualizamos localmente ANTES de que el servidor responda
+            queryClient.setQueryData(['contacts'], (old) => ({
+                ...old,
+                pages: old.pages.map(page => ({
+                    ...page,
+                    content: page.content.map(c => 
+                        c.id === updatedContact.id ? { ...c, estado: updatedContact.estado } : c
+                    )
+                }))
+            }));
+
+            return { previousData };
+        },
+        onError: (err, variables, context) => {
+            queryClient.setQueryData(['contacts'], context.previousData);
+            alert("Error al actualizar el estado.");
+        },
+    });
+
+    const handleStatusChange = (e) => {
+        const nuevoEstado = e.target.checked ? 'Contactado' : 'Pendiente';
+        const contactId = selectedContact.id;
+        
+        // Ejecutamos la mutación (esto es instantáneo en la UI)
+        mutation.mutate({ id: contactId, estado: nuevoEstado });
+        
+        // Actualizamos el modal localmente para que no parpadee
+        setSelectedContact(prev => ({ ...prev, estado: nuevoEstado }));
     };
-
-    useEffect(() => { fetchContacts(); }, []);
 
     const handleEditClick = (contact) => {
         if (!isAdmin) return;
@@ -55,74 +98,62 @@ const ContactList = () => {
         setIsModalOpen(true);
     };
 
-    const handleStatusChange = async (e) => {
-        const nuevoEstado = e.target.checked ? 'Contactado' : 'Pendiente';
-        try {
-            await updateContactStatus(selectedContact.id, nuevoEstado);
-            setContacts(contacts.map(c => 
-                c.id === selectedContact.id ? { ...c, estado: nuevoEstado } : c
-            ));
-            setSelectedContact({ ...selectedContact, estado: nuevoEstado });
-        } catch (err) {
-            alert("Error de permisos o conexión.");
-        }
-    };
+    // --- Renderizado de Filas para Virtuoso ---
+    const rowRenderer = (index, contact) => (
+        <>
+            <td>{contact.nombre}</td>
+            <td>{contact.email}</td>
+            <td>{contact.telefono?.formateado || 'Sin teléfono'}</td>
+            <td>
+                <span className={`status-badge ${contact.estado === 'Contactado' ? 'status-contactado' : 'status-pendiente'}`}>
+                    {contact.estado || 'Pendiente'}
+                </span>
+            </td>
+            {isAdmin && (
+                <td style={{ textAlign: 'center' }}>
+                    <button className="manage-btn" onClick={() => handleEditClick(contact)}>Gestionar</button>
+                </td>
+            )}
+        </>
+    );
 
     return (
         <div className="contact-list-container">
             <div className="contact-list-header">
-                <h2 className="contact-list-title">Listado de Contactos</h2>
-                {loading && <span className="status-indicator">⏳ Conectando...</span>}
-                {!isAdmin && !loading && <span className="read-only-badge">ℹ️ Modo Lectura</span>}
+                <h2 className="contact-list-title">Listado de Contactos ({allContacts.length})</h2>
+                {status === 'loading' && <span className="status-indicator">⏳ Cargando...</span>}
             </div>
 
-            {error && !loading && (
-                <div className="error-container">
-                    <p className="error-text">El servidor está despertando. Por favor, reintenta.</p>
-                    <button className="retry-button" onClick={fetchContacts}>🔄 Reintentar Carga</button>
-                </div>
-            )}
-
-            <table className="custom-table">
-                <thead>
-                    <tr>
-                        <th>Nombre</th>
-                        <th>Email</th>
-                        <th>Teléfono</th>
-                        <th>Estado</th>
-                        {isAdmin && <th style={{ textAlign: 'center' }}>Acciones</th>}
-                    </tr>
-                </thead>
-                <tbody>
-                    {loading ? (
-                        <ContactSkeleton isAdmin={isAdmin} />
-                    ) : (
-                        contacts.map(contact => (
-                            <tr key={contact.id}>
-                                <td>{contact.nombre}</td>
-                                <td>{contact.email}</td>
-                                <td>{contact.telefono?.formateado || 'Sin teléfono'}</td>
-                                <td>
-                                    <span className={`status-badge ${contact.estado === 'Contactado' ? 'status-contactado' : 'status-pendiente'}`}>
-                                        {contact.estado || 'Pendiente'}
-                                    </span>
-                                </td>
-                                {isAdmin && (
-                                    <td style={{ textAlign: 'center' }}>
-                                        <button className="manage-btn" onClick={() => handleEditClick(contact)}>Gestionar</button>
-                                    </td>
-                                )}
-                            </tr>
-                        ))
+            {/* TABLA VIRTUALIZADA */}
+            <div style={{ height: '70vh', width: '100%' }}>
+                <TableVirtuoso
+                    data={allContacts}
+                    totalCount={allContacts.length}
+                    className="custom-table"
+                    fixedHeaderContent={() => (
+                        <tr style={{ background: 'white' }}>
+                            <th style={{ width: '25%' }}>Nombre</th>
+                            <th style={{ width: '30%' }}>Email</th>
+                            <th style={{ width: '15%' }}>Teléfono</th>
+                            <th style={{ width: '15%' }}>Estado</th>
+                            {isAdmin && <th style={{ width: '15%', textAlign: 'center'}}>Acciones</th>}
+                        </tr>
                     )}
-                </tbody>
-            </table>
+                    itemContent={rowRenderer}
+                    endReached={() => {
+                        if (hasNextPage && !isFetchingNextPage) fetchNextPage();
+                    }}
+                />
+            </div>
 
+            {isFetchingNextPage && <div style={{textAlign: 'center', padding: '10px'}}>Cargando más contactos...</div>}
+
+            {/* MODAL (Se mantiene igual, solo cambia el handleStatusChange) */}
             {isModalOpen && selectedContact && (
                 <div className="modal-overlay">
                     <div className="modal-content">
                         <h4>Gestionar Contacto</h4>
-                        <p>{selectedContact.nombre} ({selectedContact.email})</p>
+                        <p>{selectedContact.nombre}</p>
                         <div className="modal-checkbox-container">
                             <input 
                                 type="checkbox" id="statusCheck"
@@ -131,9 +162,7 @@ const ContactList = () => {
                             />
                             <label htmlFor="statusCheck">Marcar como Contactado</label>
                         </div>
-                        <div style={{ textAlign: 'right' }}>
-                            <button className="manage-btn" style={{backgroundColor: '#e2e8f0', color: '#475569'}} onClick={() => setIsModalOpen(false)}>Finalizar</button>
-                        </div>
+                        <button className="manage-btn" onClick={() => setIsModalOpen(false)}>Finalizar</button>
                     </div>
                 </div>
             )}
