@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { managerApi } from '../api/apiClient';
 import './UserModal.css';
 import Swal from 'sweetalert2';
@@ -11,9 +11,17 @@ const UserModal = ({ isOpen, onClose, onSuccess, user }) => {
         roles: [],
         enabled: true
     });
+    
+    // Estados para control de UI
     const [loading, setLoading] = useState(false);
+    // Estados para validación de email
+    const [emailError, setEmailError] = useState(false);
+    const [checkingEmail, setCheckingEmail] = useState(false);
 
-    // Efecto para cargar datos del usuario si estamos en modo edición
+    const usernameInputRef = useRef(null);
+    const originalEmailRef = useRef('');
+
+    // Efecto para cargar datos en edición o resetear al cerrar
     useEffect(() => {
         if (user && isOpen) {
             setFormData({
@@ -23,62 +31,81 @@ const UserModal = ({ isOpen, onClose, onSuccess, user }) => {
                 roles: user.roles || [],
                 enabled: user.enabled ?? true
             });
+            originalEmailRef.current = user.email || '';
         } else if (!isOpen) {
-            // Reset al cerrar: Por defecto ID 2 (Usuario)
             setFormData({ 
-                username: '', 
-                password: '', 
-                email: '', 
-                roles: [{id: 2, name: 'Usuario'}], 
-                enabled: true 
+                username: '', password: '', email: '', 
+                roles: [{id: 2, name: 'Usuario'}], enabled: true 
             });
+            originalEmailRef.current = '';
+            setEmailError(false);
         }
+        if (isOpen) setTimeout(() => usernameInputRef.current?.focus(), 100);
     }, [user, isOpen]);
+
+    // Lógica de validación con Debounce para el email
+    useEffect(() => {
+        if (!formData.email || formData.email === originalEmailRef.current) {
+            setEmailError(false);
+            return;
+        }
+
+        const timer = setTimeout(async () => {
+            setCheckingEmail(true);
+            try {
+                const userId = user ? (user.id || user._id) : '';
+                const response = await managerApi.get(`/api/users/exists?email=${formData.email}&userId=${userId}`);
+                setEmailError(response.data.exists);
+            } catch (err) {
+                console.error("Error al validar email:", err);
+            } finally {
+                setCheckingEmail(false);
+            }
+        }, 600);
+
+        return () => clearTimeout(timer);
+    }, [formData.email, user]);
 
     if (!isOpen) return null;
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setLoading(true);
+        
+        if (emailError) {
+            Swal.fire('Error', 'El correo electrónico ya está registrado por otro usuario.', 'warning');
+            return;
+        }
 
-        // --- SOLUCIÓN AL ERROR 403 / DESERIALIZACIÓN ---
-        // Mapeamos los objetos de rol a los Strings técnicos que espera el Auth-Service
-        const rolesForBackend = formData.roles.map(r => {
-            if (typeof r === 'string') return r;
-            // Si el ID es 1 es ADMIN, si es 2 es USER. 
-            // Esto asegura que mandes el código duro y no la traducción.
-            return r.id === 1 ? 'ROLE_ADMIN' : 'ROLE_USER';
-        });
+        setLoading(true);
+        const rolesForBackend = formData.roles.map(r => typeof r === 'string' ? r : (r.id === 1 ? 'ROLE_ADMIN' : 'ROLE_USER'));
 
         const dataToSend = {
             username: formData.username,
             email: formData.email,
-            roles: rolesForBackend, // Enviamos ["ROLE_ADMIN"], no objetos
+            roles: rolesForBackend, 
             enabled: formData.enabled
         };
     
-        if (!user) {
-            dataToSend.password = formData.password;
-        }
+        if (!user) dataToSend.password = formData.password;
     
         try {
             if (user) {
-                // MODO EDICIÓN
                 const response = await managerApi.put(`/api/users/${user.id || user._id}`, dataToSend);
                 Swal.fire('¡Actualizado!', 'Usuario modificado con éxito', 'success');
                 onSuccess(response.data);
             } else {
-                // MODO CREACIÓN
                 const response = await managerApi.post('/api/users/create', dataToSend);
                 Swal.fire('¡Creado!', 'Usuario registrado con éxito', 'success');
                 onSuccess(response.data);
             }
             onClose();
         } catch (error) {
-            console.log("Detalle del error:", error.response?.data);
-            // Mostramos el mensaje específico del backend si existe
-            const errorMsg = error.response?.data?.message || "Error en la operación (Posible error de formato)";
-            Swal.fire('Error', errorMsg, 'error');
+            const serverMessage = error.response?.data?.message || error.response?.data;
+            if (error.response?.status === 409) {
+                Swal.fire('Error de Duplicidad', 'Ese email ya está siendo utilizado.', 'warning');
+            } else {
+                Swal.fire('Error', serverMessage || "Ocurrió un error inesperado", 'error');
+            }
         } finally {
             setLoading(false);
         }
@@ -91,7 +118,8 @@ const UserModal = ({ isOpen, onClose, onSuccess, user }) => {
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
                         <label>Nombre de Usuario</label>
-                        <input 
+                        <input
+                            ref={usernameInputRef}    
                             type="text" 
                             required 
                             value={formData.username}
@@ -104,9 +132,12 @@ const UserModal = ({ isOpen, onClose, onSuccess, user }) => {
                         <input 
                             type="email" 
                             required 
+                            style={{ borderColor: emailError ? '#ff4d4d' : '#ccc' }}
                             value={formData.email}
                             onChange={(e) => setFormData({...formData, email: e.target.value})}
                         />
+                        {checkingEmail && <small>Verificando disponibilidad...</small>}
+                        {emailError && <small style={{color: '#ff4d4d', fontWeight: 'bold'}}>Este email ya está en uso.</small>}
                     </div>
 
                     {!user && (
@@ -115,7 +146,6 @@ const UserModal = ({ isOpen, onClose, onSuccess, user }) => {
                             <input 
                                 type="password" 
                                 required 
-                                placeholder="********"
                                 value={formData.password}
                                 onChange={(e) => setFormData({...formData, password: e.target.value})}
                             />
@@ -125,12 +155,10 @@ const UserModal = ({ isOpen, onClose, onSuccess, user }) => {
                     <div className="form-group">
                         <label>Rol asignado</label>
                         <select 
-                            // Sincronización por ID: evita fallos por traducciones
                             value={formData.roles[0]?.id || ''}
                             onChange={(e) => {
                                 const selectedId = parseInt(e.target.value);
                                 const selectedName = e.target.options[e.target.selectedIndex].text;
-                                // Guardamos el objeto para la UI
                                 setFormData({...formData, roles: [{ id: selectedId, name: selectedName }]});
                             }}
                         >
@@ -153,14 +181,12 @@ const UserModal = ({ isOpen, onClose, onSuccess, user }) => {
                     )}
 
                     <div className="modal-actions">
-                        <button type="button" className="btn-cancel" onClick={onClose} style={{
-                            backgroundColor: '#64748b', color: 'white', padding: '10px 20px', borderRadius: '6px', border: 'none'
-                        }}>
-                            Cancelar
-                        </button>
-                        <button type="submit" className="btn-save" disabled={loading} style={{
-                            backgroundColor: '#00A3E0', color: 'white', padding: '10px 20px', borderRadius: '6px', border: 'none', fontWeight: 'bold'
-                        }}>
+                        <button type="button" className="btn-cancel" onClick={onClose}>Cancelar</button>
+                        <button 
+                            type="submit" 
+                            className="btn-save" 
+                            disabled={loading || emailError}
+                        >
                             {loading ? 'Guardando...' : (user ? 'Actualizar Cambios' : 'Crear Usuario')}
                         </button>
                     </div>
